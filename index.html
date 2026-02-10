@@ -1,114 +1,270 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>the_secret_casino</title>
-<style>
-body{margin:0;padding:0;font-family:'Arial',sans-serif;background:black;color:white;overflow:hidden;}
-.header{display:flex;justify-content: space-between;align-items:center;padding:10px;font-size:18px;position:relative;z-index:1;}
-.flag{font-size:24px;}
-.page{display:none;padding:20px;text-align:center;position:relative;z-index:1;}
-button{padding:10px 20px;margin:10px;font-size:16px;cursor:pointer;position:relative;z-index:1;}
-.input-field{padding:8px;margin:8px;font-size:16px;width:80%;}
-.back-btn{position:fixed;bottom:10px;right:10px;display:none;padding:8px 16px;font-size:16px;cursor:pointer;z-index:1;}
-.customer-card{border:1px solid red;padding:10px;margin:10px auto;max-width:300px;text-align:center;position:relative;z-index:1;}
-canvas{position:absolute;top:0;left:0;z-index:0;}
+<title>The Secret Casino</title>
 
-#customerList{display:none;position:fixed;top:10%;left:5%;width:90%;height:80%;background:black;color:white;overflow:auto;z-index:10;padding:10px;border:2px solid red;}
-#customerList button{position:absolute;top:10px;right:10px;}
+<style>
+body{
+margin:0;
+background:black;
+color:white;
+font-family:Arial;
+overflow:hidden;
+}
+
+/* صفحات */
+.page{
+display:none;
+height:100vh;
+width:100vw;
+padding:20px;
+box-sizing:border-box;
+}
+
+.active{
+display:block;
+}
+
+/* متن و باکس */
+.centerBox{
+height:100%;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+text-align:center;
+gap:25px;
+}
+
+/* دکمه */
+.btn{
+padding:12px 25px;
+background:#990000;
+border:none;
+color:white;
+font-size:18px;
+border-radius:8px;
+cursor:pointer;
+}
+
+/* لینک ادمین گوشه */
+.adminCorner{
+position:absolute;
+top:15px;
+right:15px;
+font-size:14px;
+cursor:pointer;
+color:#ff4444;
+}
+
+/* پرچم مشکی */
+.flag{
+position:absolute;
+top:0;
+left:0;
+width:45px;
+height:45px;
+background:black;
+border-right:2px solid gray;
+border-bottom:2px solid gray;
+}
+
+/* اشکال شناور */
+.shape{
+position:absolute;
+border:2px solid red;
+opacity:0.6;
+}
 </style>
 </head>
+
 <body>
 
-<canvas id="bgCanvas"></canvas>
+<div class="flag"></div>
 
-<div class="header">
-  <div id="adminPrompt">آیا شما ادمین هستید؟</div>
-  <div class="flag">🏴</div>
+<div class="adminCorner" onclick="goPage('adminLogin')">
+Are you an admin?
 </div>
 
-<button id="backBtn" class="back-btn" onclick="goBack()">برگشت</button>
+<!-- مشتری -->
+<div id="customer" class="page active">
+<div class="centerBox">
 
-<div id="customerPage" class="page">
-  <h1>خوش آمدید</h1>
-  <p id="boothAddress">طبقه دوم کلاس 904</p>
-  <p>ای دی روبیکای فروشگاه: @the_secret_casino</p>
-  <p id="boothNumberDisplay">شماره غرفه: 0</p>
+<h1 onclick="showBooth()" style="cursor:pointer">
+Welcome to The Secret Casino
+</h1>
+
+<div id="boothInfo" style="display:none">
+<p>Booth Location: Second Floor - Class 904</p>
+<p id="boothNumber"></p>
+<p>Rubika ID: @the_secret_casino</p>
 </div>
 
-<div id="adminLoginPage" class="page">
-  <h2>Admin Login</h2>
-  <input id="adminId" class="input-field" placeholder="نام کاربری">
-  <input id="adminPass" type="password" class="input-field" placeholder="رمز عبور">
-  <br>
-  <button onclick="loginAdmin()">ورود</button>
+</div>
 </div>
 
-<div id="mainAdminPage" class="page">
-  <h2>ادمین اصلی</h2>
-  <button onclick="showCustomers()">دیدن مشتری‌ها</button>
-  <button onclick="registerCustomer()">ثبت مشتری</button>
-  <button onclick="registerRevenue()">ثبت درآمد</button>
-  <button onclick="setBoothNumber()">شماره غرفه</button>
-  <button onclick="clearAllAdminPasswords()">پاک کردن همه رمزها</button>
-  <button onclick="showBoothNumber()">دیدن شماره غرفه</button>
+<!-- ورود ادمین -->
+<div id="adminLogin" class="page">
+<button class="btn" onclick="goBack()">Back</button>
+
+<div class="centerBox">
+<h2>Admin Login</h2>
+
+<input id="user" placeholder="Username"><br>
+<input id="pass" type="password" placeholder="Password"><br>
+
+<button class="btn" onclick="login()">Login</button>
+</div>
 </div>
 
-<div id="admin01Page" class="page">
-  <h2>ادمین 01</h2>
-  <button onclick="registerCustomer()">ثبت مشتری</button>
-  <button onclick="showCapacity()">دیدن ظرفیت تکمیل</button>
-</div>
+<!-- داشبورد ادمین -->
+<div id="adminPanel" class="page">
+<button class="btn" onclick="goBack()">Back</button>
 
-<div id="admin02Page" class="page">
-  <h2>ادمین 02</h2>
-  <button onclick="verifyCustomerCode()">تایید رمز</button>
-  <button onclick="showCapacity()">دیدن ظرفیت تکمیل</button>
-</div>
+<div class="centerBox">
+<h2 id="adminTitle"></h2>
 
-<div id="adminPage" class="page">
-  <h2>ادمین</h2>
-  <button onclick="showCustomers()">دیدن مشتری‌ها</button>
-  <button onclick="registerRevenue()">ثبت درآمد</button>
-  <p>پیج اینستاگرام فقط برای ادمین: 
-  <a href="https://instagram.com/the_secret_casino" target="_blank">@the_secret_casino</a></p>
+<button class="btn" onclick="logout()">Logout</button>
 </div>
-
-<div id="customerList">
-  <button onclick="document.getElementById('customerList').style.display='none'">بستن</button>
-  <div id="customerContent"></div>
 </div>
 
 <script>
 
-/* ===== بک گراند شکل های متحرک ===== */
+/* --------- صفحه ها -------- */
+let historyStack=[];
 
-const canvas=document.getElementById("bgCanvas");
-const ctx=canvas.getContext("2d");
-
-function resize(){
-  canvas.width=window.innerWidth;
-  canvas.height=window.innerHeight;
+function goPage(id){
+document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+document.getElementById(id).classList.add("active");
+historyStack.push(id);
 }
-window.addEventListener("resize",resize);
-resize();
 
-class Shape{
-  constructor(){
-    this.size=Math.random()*40+10;
-    this.x=Math.random()*canvas.width;
-    this.y=Math.random()*canvas.height;
-    this.speedX=(Math.random()-0.5)*2;
-    this.speedY=(Math.random()-0.5)*2;
-    this.type=Math.floor(Math.random()*3);
-  }
+function goBack(){
+historyStack.pop();
+let last = historyStack.pop() || "customer";
+goPage(last);
+}
 
-  move(){
-    this.x+=this.speedX;
-    this.y+=this.speedY;
+/* --------- نمایش غرفه -------- */
+function showBooth(){
+document.getElementById("boothInfo").style.display="block";
+}
 
-    if(this.x<0 || this.x>canvas.width) this.speedX*=-1;
+/* --------- LocalStorage -------- */
+
+if(!localStorage.admins){
+localStorage.admins = JSON.stringify({});
+}
+
+if(!localStorage.boothNumber){
+localStorage.boothNumber="Not Set";
+}
+
+document.getElementById("boothNumber").innerText =
+"Booth Number: " + localStorage.boothNumber;
+
+/* --------- ورود ادمین -------- */
+function login(){
+
+let u = document.getElementById("user").value;
+let p = document.getElementById("pass").value;
+
+let admins = JSON.parse(localStorage.admins);
+
+/* ادمین اصلی */
+if(u==="00" &&
+(p==="3.141592653589793238" || 
+p==="3.14159265358979323846264338")){
+
+goPage("adminPanel");
+document.getElementById("adminTitle").innerText="Main Admin 00";
+return;
+}
+
+/* ادمین های 01 تا 09 */
+if(/^0[1-9]$/.test(u)){
+
+if(!admins[u]){
+admins[u]=p;
+localStorage.admins=JSON.stringify(admins);
+}
+
+if(admins[u]===p){
+goPage("adminPanel");
+document.getElementById("adminTitle").innerText="Admin "+u;
+return;
+}
+
+}
+
+alert("Wrong Login");
+}
+
+/* خروج */
+function logout(){
+goPage("customer");
+}
+
+/* --------- ساخت اشکال شناور -------- */
+
+function createShape(corners){
+
+let shape=document.createElement("div");
+shape.className="shape";
+
+/* اندازه تصادفی */
+let size = Math.random()*60+40;
+shape.style.width=size+"px";
+shape.style.height=size+"px";
+
+/* گوشه ها */
+if(corners===0){
+shape.style.borderRadius="50%";
+}
+
+/* موقعیت */
+shape.style.left=Math.random()*window.innerWidth+"px";
+shape.style.top=Math.random()*window.innerHeight+"px";
+
+document.body.appendChild(shape);
+
+/* سرعت */
+let speed = 1 * (corners || 1);
+
+let dx = speed;
+let dy = speed;
+
+function animate(){
+
+let rect = shape.getBoundingClientRect();
+
+let x = rect.left + dx;
+let y = rect.top + dy;
+
+if(x <=0 || x+size >= window.innerWidth) dx*=-1;
+if(y <=0 || y+size >= window.innerHeight) dy*=-1;
+
+shape.style.left = x+"px";
+shape.style.top = y+"px";
+
+requestAnimationFrame(animate);
+}
+
+animate();
+}
+
+/* 11 شکل */
+for(let i=0;i<11;i++){
+let corners = Math.floor(Math.random()*6); 
+createShape(corners);
+}
+
+</script>
+
+</body>
+</html>    if(this.x<0 || this.x>canvas.width) this.speedX*=-1;
     if(this.y<0 || this.y>canvas.height) this.speedY*=-1;
   }
 
