@@ -3,14 +3,50 @@
 <head>
 <meta charset="UTF-8">
 <title>the_secret_casino</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
   html, body { margin:0; padding:0; overflow:hidden; background:black; color:white; font-family:sans-serif;}
-  #canvas{display:block;}
+  #canvas{position:absolute; top:0; left:0; z-index:0;}
+  .page{display:none; position:absolute; top:0; left:0; width:100%; height:100%; z-index:1; padding:20px; box-sizing:border-box;}
+  button{padding:10px 15px; margin:5px; background:red; color:white; border:none; border-radius:5px; cursor:pointer;}
+  #backBtn{position:fixed; bottom:10px; right:10px; display:none;}
 </style>
 </head>
 <body>
 <canvas id="canvas"></canvas>
+
+<!-- صفحه مشتری -->
+<div class="page" id="customerPage">
+  <h1>خوش آمدید به کازینوی امن</h1>
+  <p id="boothNumberDisplay"></p>
+  <p>آیدی روبیکا: @the_secret_casino</p>
+  <p>آدرس غرفه: طبقه دوم کلاس ۹۰۴</p>
+  <button id="adminPrompt">Are you an admin?</button>
+</div>
+
+<!-- صفحه ورود ادمین -->
+<div class="page" id="adminLoginPage">
+  <h2>Admin Login</h2>
+  <input id="adminId" placeholder="Username"><br><br>
+  <input id="adminPass" type="password" placeholder="Password"><br><br>
+  <button onclick="loginAdmin()">Login</button>
+</div>
+
+<!-- صفحه ادمین اصلی -->
+<div class="page" id="mainAdminPage">
+  <h2>Admin 00</h2>
+  <button onclick="setBoothNumber()">تغییر شماره غرفه</button>
+  <button onclick="registerCustomer()">ثبت مشتری</button>
+  <button onclick="showCustomers()">مشاهده مشتری‌ها</button>
+  <button onclick="registerRevenue()">ثبت درآمد</button>
+  <button onclick="clearAllAdminPasswords()">پاک کردن همه رمزها</button>
+</div>
+
+<!-- دکمه Back -->
+<button id="backBtn" onclick="goBack()">Back</button>
+
 <script>
+// بک‌گراند متحرک
 const c=document.getElementById('canvas'), ctx=c.getContext('2d');
 c.width=window.innerWidth; c.height=window.innerHeight;
 
@@ -19,10 +55,10 @@ class Shape{
     this.x=Math.random()*c.width;
     this.y=Math.random()*c.height;
     this.size=Math.random()*30+20;
-    this.type=Math.floor(Math.random()*11); // 11 شکل عجیب
-    this.color=['red','green','blue','yellow','purple','orange','pink','cyan','lime','magenta','white'][Math.floor(Math.random()*11)];
-    this.corners=[1,3,4,5,6,5,3,4,2,5,6][this.type]; // تعداد گوشه‌ها برای سرعت
-    this.speed=(this.corners/2); 
+    this.type=Math.floor(Math.random()*11);
+    this.color=['red','green','blue','yellow','purple','orange','pink','cyan','lime','magenta','white'][this.type];
+    this.corners=[1,3,4,5,6,5,3,4,2,5,6][this.type];
+    this.speed=this.corners/2;
     this.angle=Math.random()*Math.PI*2;
   }
   move(){
@@ -32,84 +68,98 @@ class Shape{
     if(this.y<0||this.y>c.height) this.angle=-this.angle;
   }
   draw(){
-    ctx.beginPath();
-    ctx.strokeStyle=this.color;
-    ctx.lineWidth=2;
+    ctx.beginPath(); ctx.strokeStyle=this.color; ctx.lineWidth=2;
     switch(this.type){
       case 0: ctx.arc(this.x,this.y,this.size,0,Math.PI*2); break;
       case 1: ctx.rect(this.x-this.size/2,this.y-this.size/2,this.size,this.size); break;
-      case 2: for(let i=0;i<3;i++){ let a=i*2*Math.PI/3; ctx.lineTo(this.x+this.size*Math.cos(a), this.y+this.size*Math.sin(a)); } ctx.closePath(); break;
-      case 3: for(let i=0;i<4;i++){ let a=i*2*Math.PI/4; ctx.lineTo(this.x+this.size*Math.cos(a), this.y+this.size*Math.sin(a)); } ctx.closePath(); break;
-      case 4: for(let i=0;i<5;i++){ let a=i*2*Math.PI/5; ctx.lineTo(this.x+this.size*Math.cos(a), this.y+this.size*Math.sin(a)); } ctx.closePath(); break;
-      case 5: for(let i=0;i<6;i++){ let a=i*2*Math.PI/6; ctx.lineTo(this.x+this.size*Math.cos(a), this.y+this.size*Math.sin(a)); } ctx.closePath(); break;
-      case 6: for(let i=0;i<5;i++){ let a=i*2*Math.PI/5; ctx.lineTo(this.x+this.size*Math.cos(a), this.y+this.size*Math.sin(a)*0.6); } ctx.closePath(); break;
-      case 7: for(let i=0;i<3;i++){ let a=i*2*Math.PI/3; ctx.lineTo(this.x+this.size*Math.cos(a), this.y+this.size*Math.sin(a)*1.5); } ctx.closePath(); break;
-      case 8: ctx.ellipse(this.x,this.y,this.size,this.size/2,0,0,Math.PI*2); break;
-      case 9: for(let i=0;i<5;i++){ let a=i*2*Math.PI/5; ctx.lineTo(this.x+this.size*Math.cos(a), this.y+this.size*Math.sin(a)*0.3); } ctx.closePath(); break;
-      case 10: for(let i=0;i<6;i++){ let a=i*2*Math.PI/6; ctx.lineTo(this.x+this.size*Math.cos(a)*0.5, this.y+this.size*Math.sin(a)); } ctx.closePath(); break;
+      default:
+        let n=[3,4,5,6,5,3,4,2,5,6][this.type-2]; 
+        for(let i=0;i<n;i++){
+          let a=i*2*Math.PI/n;
+          ctx.lineTo(this.x+this.size*Math.cos(a), this.y+this.size*Math.sin(a));
+        }
+        ctx.closePath(); break;
     }
     ctx.stroke();
   }
 }
-
 let shapes=[]; for(let i=0;i<11;i++) shapes.push(new Shape());
-
 function animate(){
   ctx.clearRect(0,0,c.width,c.height);
   shapes.forEach(s=>{ s.move(); s.draw(); });
   requestAnimationFrame(animate);
 }
 animate();
+
+// داده‌ها و صفحات
+let boothNumber=localStorage.getItem('boothNumber')||0;
+document.getElementById('boothNumberDisplay').innerText=`شماره غرفه: ${boothNumber}`;
+let customers=JSON.parse(localStorage.getItem('customers')||'[]');
+let revenue=parseInt(localStorage.getItem('revenue')||'0');
+const admins=[
+  {id:'01',password:'',role:'secondary'},
+  {id:'02',password:'',role:'secondary'},
+  {id:'00',password:'3.14159265358979323846264338',role:'main'}
+];
+
+let currentPage='customerPage';
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.style.display='none');
+  document.getElementById(id).style.display='block';
+  currentPage=id;
+  document.getElementById('backBtn').style.display=(id!=='customerPage')?'block':'none';
+}
+showPage('customerPage');
+document.getElementById('adminPrompt').onclick=()=>{ showPage('adminLoginPage'); };
+function goBack(){ showPage('customerPage'); }
+
+function loginAdmin(){
+  let id=document.getElementById('adminId').value;
+  let pass=document.getElementById('adminPass').value;
+  let admin=admins.find(a=>a.id===id);
+  if(!admin){ alert('نام کاربری اشتباه است'); return;}
+  if(admin.id==='00' && pass===admin.password){ showPage('mainAdminPage'); return;}
+  if(['01','02','03','04','05','06','07','08','09'].includes(admin.id)){
+    if(admin.password===''){ admin.password=pass; }
+    if(admin.password===pass){ showPage('mainAdminPage'); return;}
+  }
+  alert('رمز اشتباه است');
+}
+
+function registerCustomer(){
+  let name=prompt('نام مشتری:'); if(!name) return;
+  let family=prompt('نام خانوادگی:'); if(!family) return;
+  let code=Math.random().toString(36).substring(2,4)+Math.floor(Math.random()*9000+1000);
+  customers.push({name,family,code,active:true});
+  localStorage.setItem('customers',JSON.stringify(customers));
+  alert(`مشتری ثبت شد، رمز: ${code}`);
+}
+
+function showCustomers(){
+  let list=customers.map(c=>`${c.name} ${c.family} - رمز: ${c.code} - فعال: ${c.active}`).join('<br>');
+  let w=window.open('','_blank','width=400,height=600'); w.document.write(list);
+}
+
+function registerRevenue(){
+  let amount=parseInt(prompt('میزان افزایش درآمد:')); if(isNaN(amount)||amount<0){ alert('فقط اعداد مثبت'); return;}
+  revenue+=amount; localStorage.setItem('revenue',revenue);
+  alert(`درآمد فعلی: ${revenue}`);
+}
+
+function clearAllAdminPasswords(){
+  admins.forEach(a=>{if(a.id!=='00')a.password='';});
+  alert('همه رمزها پاک شدند');
+}
+
+function setBoothNumber(){
+  let num=prompt('شماره غرفه جدید:'); if(num){
+    boothNumber=num; localStorage.setItem('boothNumber',num);
+    document.getElementById('boothNumberDisplay').innerText=`شماره غرفه: ${num}`;
+  }
+}
 </script>
 </body>
-</html>
-<div class="centerBox">
-<h2>Admin Login</h2>
-
-<input id="user" placeholder="Username"><br>
-<input id="pass" type="password" placeholder="Password"><br>
-
-<button class="btn" onclick="login()">Login</button>
-</div>
-</div>
-
-<!-- داشبورد ادمین -->
-<div id="adminPanel" class="page">
-<button class="btn" onclick="goBack()">Back</button>
-
-<div class="centerBox">
-<h2 id="adminTitle"></h2>
-
-<button class="btn" onclick="logout()">Logout</button>
-</div>
-</div>
-
-<script>
-
-/* --------- صفحه ها -------- */
-let historyStack=[];
-
-function goPage(id){
-document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-document.getElementById(id).classList.add("active");
-historyStack.push(id);
-}
-
-function goBack(){
-historyStack.pop();
-let last = historyStack.pop() || "customer";
-goPage(last);
-}
-
-/* --------- نمایش غرفه -------- */
-function showBooth(){
-document.getElementById("boothInfo").style.display="block";
-}
-
-/* --------- LocalStorage -------- */
-
-if(!localStorage.admins){
-localStorage.admins = JSON.stringify({});
+</html>localStorage.admins = JSON.stringify({});
 }
 
 if(!localStorage.boothNumber){
