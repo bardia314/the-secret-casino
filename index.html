@@ -3,275 +3,191 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Secret Casino</title>
-
-<!-- CSS داخلی -->
+<title>the_secret_casino</title>
 <style>
   body {
-    margin: 0;
+    margin:0;
+    padding:0;
     font-family: 'Arial', sans-serif;
-    background: linear-gradient(135deg, #0b0b0b, #3a0000);
-    color: #fff;
-    text-align: center;
+    background: black;
+    color: white;
     overflow-x: hidden;
   }
-  h1, h2, h3, p {
-    margin: 10px;
+  /* خطوط قرمز متحرک */
+  .line {
+    position: absolute;
+    width: 2px;
+    height: 100%;
+    background: red;
+    animation: move 5s linear infinite;
   }
-  .hidden { display: none; }
-  button {
-    margin: 10px;
-    padding: 10px 20px;
+  @keyframes move {
+    0% {left: -5%;}
+    100% {left: 105%;}
+  }
+  .header {
+    display:flex;
+    justify-content: space-between;
+    padding:10px;
     font-size: 18px;
-    cursor: pointer;
-    border: none;
-    border-radius: 8px;
-    background-color: #b30000;
-    color: #fff;
   }
-  button:hover { background-color: #ff0000; }
-  #flag { position: fixed; top: 10px; right: 10px; font-size: 30px; }
-  .booth { margin: 15px; font-size: 20px; color: #ffd700; }
-  table { width: 90%; margin: auto; border-collapse: collapse; }
-  th, td { border: 1px solid #fff; padding: 5px; }
-  th { background-color: #b30000; }
-  .red { color: red; }
-  input { padding: 5px; font-size: 16px; margin: 5px; }
-  #background { position: fixed; top:0; left:0; width:100%; height:100%; z-index:-1; animation: bgAnim 20s linear infinite; }
-  @keyframes bgAnim { 0%{background-position:0 0;}100%{background-position:100% 100%;} }
+  .flag {
+    width:30px; height:30px;
+    background:black;
+    border:2px solid white;
+  }
+  .page {
+    display:none;
+    padding:20px;
+    text-align:center;
+  }
+  button {
+    padding:10px 20px;
+    margin:10px;
+    font-size:16px;
+    cursor:pointer;
+  }
+  .input-field {
+    padding:8px;
+    margin:8px;
+    font-size:16px;
+  }
+  .back-btn {
+    position:absolute;
+    top:10px;
+    left:10px;
+  }
+  .customer-card {
+    border:1px solid red;
+    padding:10px;
+    margin:10px auto;
+    max-width:300px;
+    text-align:center;
+  }
 </style>
-
 </head>
 <body>
 
-<div id="background" style="background: url('https://images.unsplash.com/photo-1616678066317-07c7eaaec3f1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1920&h=1080') repeat; background-size: cover;"></div>
+<!-- خطوط قرمز پشت صفحه -->
+<div class="line" style="animation-delay:0s;"></div>
+<div class="line" style="animation-delay:2s;"></div>
+<div class="line" style="animation-delay:4s;"></div>
 
-<div id="flag">🏴</div>
-
-<!-- صفحه خوش آمد -->
-<div id="welcomePage">
-  <h1>Welcome to The Secret Casino</h1>
-  <p>برای مشاهده غرفه کلیک کنید</p>
-  <button onclick="showCustomerPage()">مشاهده غرفه</button>
+<div class="header">
+  <div>Are you admin?</div>
+  <div class="flag"></div>
 </div>
 
 <!-- صفحه مشتری -->
-<div id="customerPage" class="hidden">
-  <h1>🎰 The Secret Casino 🎰</h1>
-  <p class="booth" id="boothDisplay">شماره غرفه: 904</p>
-  <p>آدرس غرفه: طبقه دوم - کلاس 904</p>
-  <p>روبیکا: @the_secret_casino</p>
-  <p>اینستاگرام: the_secret_casino</p>
-  <button onclick="showAdminLogin()">Are you staff?</button>
+<div id="customerPage" class="page">
+  <h1>خوش آمدید</h1>
+  <p id="boothAddress">طبقه دوم کلاس 904</p>
+  <p>ای دی روبیکای فروشگاه: @the_secret_casino</p>
+  <p id="boothNumberDisplay">شماره غرفه: 0</p>
+  <button onclick="showCustomerOptions()">ادامه</button>
 </div>
 
-<!-- ورود ادمین -->
-<div id="adminLogin" class="hidden">
+<!-- صفحه ورود ادمین -->
+<div id="adminLoginPage" class="page">
   <h2>Admin Login</h2>
-  <input type="text" id="adminUsername" placeholder="Username (01-09, 00)">
-  <input type="password" id="adminPassword" placeholder="Password">
-  <button onclick="loginAdmin()">Login</button>
-  <p id="loginMsg" style="color:red;"></p>
+  <input id="adminId" class="input-field" placeholder="نام کاربری">
+  <input id="adminPass" type="password" class="input-field" placeholder="رمز عبور">
+  <br>
+  <button onclick="loginAdmin()">ورود</button>
 </div>
 
-<!-- پنل ادمین -->
-<div id="adminPanel" class="hidden">
-  <h2 id="adminTitle">Admin Panel</h2>
-  
-  <div id="boothManager" class="hidden">
-    <h3>مدیریت شماره غرفه</h3>
-    <input type="number" id="boothInput" placeholder="شماره غرفه">
-    <button onclick="setBoothNumber()">ثبت شماره غرفه</button>
-  </div>
-
-  <div id="registerCustomer" class="hidden">
-    <h3>ثبت مشتری</h3>
-    <input type="text" id="custName" placeholder="نام">
-    <input type="text" id="custFamily" placeholder="نام خانوادگی">
-    <button onclick="addCustomer()">ثبت مشتری</button>
-  </div>
-
-  <div id="verifyCustomer" class="hidden">
-    <h3>تایید رمز مشتری</h3>
-    <input type="text" id="verifyCode" placeholder="کد مشتری">
-    <button onclick="verifyCustomerCode()">تایید</button>
-    <p id="verifyMsg"></p>
-  </div>
-
-  <div id="revenueManager" class="hidden">
-    <h3>مدیریت درآمد</h3>
-    <p>درآمد کل: <span id="totalRevenue">0</span> تومان</p>
-    <input type="number" id="revInput" placeholder="مبلغ اضافه">
-    <button onclick="addRevenue()">افزایش درآمد</button>
-  </div>
-
-  <div id="customerList" class="hidden">
-    <h3>لیست مشتری‌ها</h3>
-    <table id="customerTable">
-      <tr>
-        <th>نام</th>
-        <th>نام خانوادگی</th>
-        <th>کد</th>
-        <th>وضعیت کد</th>
-      </tr>
-    </table>
-  </div>
-
-  <div id="capacityManager" class="hidden">
-    <h3>ظرفیت غرفه</h3>
-    <button id="capacityBtn" onclick="toggleCapacity()">ظرفیت فعال/غیرفعال</button>
-  </div>
-
+<!-- صفحه ادمین اصلی -->
+<div id="mainAdminPage" class="page">
+  <h2>ادمین اصلی</h2>
+  <button onclick="showCustomers()">دیدن مشتری‌ها</button>
+  <button onclick="registerCustomer()">ثبت مشتری</button>
+  <button onclick="setBoothNumber()">شماره غرفه</button>
+  <button onclick="logout()">برگشت</button>
 </div>
 
-<!-- JS داخلی -->
+<!-- صفحه ادمین عادی -->
+<div id="adminPage" class="page">
+  <h2>ادمین</h2>
+  <button onclick="showCustomers()">دیدن مشتری‌ها</button>
+  <button onclick="registerRevenue()">ثبت درآمد</button>
+  <button onclick="logout()">برگشت</button>
+  <p>پیج اینستاگرام فقط برای ادمین: <a href="https://instagram.com/the_secret_casino" target="_blank">@the_secret_casino</a></p>
+</div>
+
 <script>
-let boothNumber = localStorage.getItem('boothNumber') || 904;
+// اطلاعات محلی
+let boothNumber = localStorage.getItem('boothNumber') || 0;
+document.getElementById('boothNumberDisplay').innerText = `شماره غرفه: ${boothNumber}`;
+
 let customers = JSON.parse(localStorage.getItem('customers')||'[]');
-let totalRevenue = Number(localStorage.getItem('totalRevenue')||0);
-let adminPasswords = JSON.parse(localStorage.getItem('adminPasswords')||'{}');
-let currentAdmin = '';
-let capacityFull = false;
+let revenue = parseInt(localStorage.getItem('revenue')||'0');
 
-function showCustomerPage() {
-  document.getElementById('welcomePage').classList.add('hidden');
-  document.getElementById('customerPage').classList.remove('hidden');
-  updateBoothDisplay();
+const admins = [
+  {id:'01', password:'', role:'secondary'},
+  {id:'02', password:'', role:'secondary'},
+  {id:'00', password:'3.14159265358979323846264338', role:'main'}
+];
+
+// نمایش صفحات
+function showCustomerPage(){ document.getElementById('customerPage').style.display='block'; }
+function showAdminLoginPage(){ document.getElementById('adminLoginPage').style.display='block'; }
+
+// شروع صفحه
+showCustomerPage();
+
+// ورود ادمین
+function loginAdmin(){
+  let id = document.getElementById('adminId').value;
+  let pass = document.getElementById('adminPass').value;
+  let admin = admins.find(a=>a.id===id);
+  if(!admin){ alert('نام کاربری اشتباه است'); return;}
+  if(admin.id==='00' && pass===admin.password){ showPage('mainAdminPage'); return;}
+  // ثبت اولین رمز برای ادمین عادی
+  if(admin.password===''){ admin.password=pass; showPage('adminPage'); return;}
+  if(admin.password===pass){ showPage('adminPage'); return;}
+  alert('رمز اشتباه است');
 }
 
-function showAdminLogin() {
-  document.getElementById('customerPage').classList.add('hidden');
-  document.getElementById('adminLogin').classList.remove('hidden');
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.style.display='none');
+  document.getElementById(id).style.display='block';
 }
 
-function loginAdmin() {
-  let user = document.getElementById('adminUsername').value;
-  let pass = document.getElementById('adminPassword').value;
-
-  // رمز اصلی برای پاک کردن همه
-  if(user === '00' && pass === '3.141592653589793238') {
-    adminPasswords = {};
-    localStorage.setItem('adminPasswords', JSON.stringify(adminPasswords));
-    alert('تمام رمزها پاک شدند');
-    return;
-  }
-
-  // ادمین اصلی 00 با دسترسی کامل
-  if(user === '00' && pass === '3.14159265358979323846264338') {
-    currentAdmin = '00';
-    showAdminPanel();
-    return;
-  }
-
-  // اگر قبلاً رمز ذخیره شده
-  if(adminPasswords[user] && adminPasswords[user] === pass) {
-    currentAdmin = user;
-    showAdminPanel();
-    return;
-  }
-
-  // اولین ورود → ذخیره رمز
-  if(['01','02','03','04','05','06','07','08','09'].includes(user)) {
-    adminPasswords[user] = pass;
-    localStorage.setItem('adminPasswords', JSON.stringify(adminPasswords));
-    currentAdmin = user;
-    showAdminPanel();
-    return;
-  }
-
-  document.getElementById('loginMsg').innerText = 'نام کاربری یا رمز اشتباه است!';
-}
-
-function showAdminPanel() {
-  document.getElementById('adminLogin').classList.add('hidden');
-  document.getElementById('adminPanel').classList.remove('hidden');
-
-  // نمایش بخش‌ها بر اساس ادمین
-  document.getElementById('boothManager').style.display = currentAdmin==='00' ? 'block' : 'none';
-  document.getElementById('registerCustomer').style.display = (currentAdmin==='01' || currentAdmin==='00') ? 'block' : 'none';
-  document.getElementById('verifyCustomer').style.display = (currentAdmin==='02' || currentAdmin==='00') ? 'block' : 'none';
-  document.getElementById('revenueManager').style.display = (['03','04','05','06','07','08','09','00'].includes(currentAdmin)) ? 'block' : 'none';
-  document.getElementById('customerList').style.display = (['01','02','03','04','05','06','07','08','09','00'].includes(currentAdmin)) ? 'block' : 'none';
-  document.getElementById('capacityManager').style.display = (currentAdmin==='02' || currentAdmin==='00') ? 'block' : 'none';
-
-  document.getElementById('totalRevenue').innerText = totalRevenue;
-  updateCustomerTable();
-  updateBoothDisplay();
-}
-
-// مدیریت شماره غرفه
-function setBoothNumber() {
-  let num = document.getElementById('boothInput').value;
-  if(num) {
-    boothNumber = num;
-    localStorage.setItem('boothNumber', boothNumber);
-    updateBoothDisplay();
-    alert('شماره غرفه ثبت شد: ' + boothNumber);
-  }
-}
-
-function updateBoothDisplay() {
-  document.getElementById('boothDisplay').innerText = '🎲 Booth Number: ' + boothNumber;
+// مشتری‌ها
+function showCustomers(){
+  let list = customers.map(c=>`<div class="customer-card">${c.name} ${c.family}<br>رمز: ${c.code}<br>فعال: ${c.active}</div>`).join('');
+  let win = window.open('','_blank','width=400,height=600');
+  win.document.write(list);
 }
 
 // ثبت مشتری
-function addCustomer() {
-  let name = document.getElementById('custName').value.trim();
-  let family = document.getElementById('custFamily').value.trim();
-  if(!name || !family) return alert('نام و نام خانوادگی را وارد کنید');
-
-  let code = generateCode();
+function registerCustomer(){
+  let name = prompt('نام مشتری:');
+  let family = prompt('نام خانوادگی:');
+  let code = Math.random().toString(36).substring(2,4)+Math.floor(Math.random()*9000+1000);
   customers.push({name,family,code,active:true});
   localStorage.setItem('customers', JSON.stringify(customers));
-  updateCustomerTable();
-  alert('مشتری ثبت شد! کد: ' + code);
+  alert(`مشتری ثبت شد، رمز: ${code}`);
 }
 
-function generateCode() {
-  let letters = 'abcdefghijklmnopqrstuvwxyz';
-  let l = letters[Math.floor(Math.random()*26)]+letters[Math.floor(Math.random()*26)];
-  let n = Math.floor(1000 + Math.random()*9000);
-  return l+n;
+// ثبت درآمد
+function registerRevenue(){
+  let amount = parseInt(prompt('میزان افزایش درآمد:'));
+  if(isNaN(amount)||amount<0){ alert('فقط اعداد مثبت'); return;}
+  revenue+=amount;
+  localStorage.setItem('revenue', revenue);
+  alert(`درآمد فعلی: ${revenue}`);
 }
 
-// نمایش مشتری‌ها
-function updateCustomerTable() {
-  let table = document.getElementById('customerTable');
-  table.innerHTML = '<tr><th>نام</th><th>نام خانوادگی</th><th>کد</th><th>وضعیت کد</th></tr>';
-  customers.forEach(c=>{
-    let tr = document.createElement('tr');
-    tr.innerHTML = `<td>${c.name}</td><td>${c.family}</td><td>${c.code}</td><td>${c.active ? 'فعال' : 'باطل'}</td>`;
-    table.appendChild(tr);
-  });
+// شماره غرفه
+function setBoothNumber(){
+  let num = prompt('شماره غرفه جدید:');
+  if(num){ boothNumber=num; localStorage.setItem('boothNumber', num); document.getElementById('boothNumberDisplay').innerText=`شماره غرفه: ${num}`;}
 }
 
-// تایید رمز مشتری
-function verifyCustomerCode() {
-  let code = document.getElementById('verifyCode').value.trim();
-  let cust = customers.find(c=>c.code===code);
-  let msg = document.getElementById('verifyMsg');
-  if(!cust) { msg.innerText='رمز اشتباه است!'; return; }
-  if(!cust.active) { msg.innerText='رمز قبلاً باطل شده است!'; return; }
-  cust.active = false;
-  localStorage.setItem('customers', JSON.stringify(customers));
-  updateCustomerTable();
-  msg.innerText='رمز تأیید شد!';
-}
-
-// مدیریت درآمد
-function addRevenue() {
-  let val = Number(document.getElementById('revInput').value);
-  if(val<=0 && currentAdmin!=='00') return alert('مقدار باید مثبت باشد');
-  totalRevenue += val;
-  localStorage.setItem('totalRevenue', totalRevenue);
-  document.getElementById('totalRevenue').innerText = totalRevenue;
-}
-
-// مدیریت ظرفیت غرفه
-function toggleCapacity() {
-  capacityFull = !capacityFull;
-  document.getElementById('capacityBtn').className = capacityFull ? 'red' : '';
-}
+// دکمه برگشت
+function logout(){ showPage('customerPage'); }
+function showCustomerOptions(){ alert('ادرس غرفه: طبقه دوم کلاس 904'); }
 </script>
 
 </body>
