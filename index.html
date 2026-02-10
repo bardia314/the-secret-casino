@@ -5,77 +5,68 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>the_secret_casino</title>
 <style>
-  body {
-    margin:0;
-    padding:0;
-    font-family: 'Arial', sans-serif;
-    background: black;
-    color: white;
-    overflow-x: hidden;
-  }
-  /* خطوط قرمز متحرک */
-  .line {
-    position: absolute;
-    width: 2px;
-    height: 100%;
-    background: red;
-    animation: move 5s linear infinite;
-  }
-  @keyframes move {
-    0% {left: -5%;}
-    100% {left: 105%;}
-  }
-  .header {
-    display:flex;
-    justify-content: space-between;
-    padding:10px;
-    font-size: 18px;
-  }
-  .flag {
-    width:30px; height:30px;
-    background:black;
-    border:2px solid white;
-  }
-  .page {
-    display:none;
-    padding:20px;
-    text-align:center;
-  }
-  button {
-    padding:10px 20px;
-    margin:10px;
-    font-size:16px;
-    cursor:pointer;
-  }
-  .input-field {
-    padding:8px;
-    margin:8px;
-    font-size:16px;
-  }
-  .back-btn {
-    position:absolute;
-    top:10px;
-    left:10px;
-  }
-  .customer-card {
-    border:1px solid red;
-    padding:10px;
-    margin:10px auto;
-    max-width:300px;
-    text-align:center;
-  }
+body {
+  margin:0;
+  padding:0;
+  font-family:'Arial',sans-serif;
+  background:black;
+  color:white;
+  overflow:hidden;
+}
+.header {
+  display:flex;
+  justify-content: space-between;
+  align-items:center;
+  padding:10px;
+  font-size:18px;
+}
+.flag {
+  font-size: 24px;
+}
+.page {
+  display:none;
+  padding:20px;
+  text-align:center;
+}
+button {
+  padding:10px 20px;
+  margin:10px;
+  font-size:16px;
+  cursor:pointer;
+}
+.input-field {
+  padding:8px;
+  margin:8px;
+  font-size:16px;
+  width:80%;
+}
+.back-btn {
+  position:absolute;
+  top:10px;
+  left:10px;
+}
+.customer-card {
+  border:1px solid red;
+  padding:10px;
+  margin:10px auto;
+  max-width:300px;
+  text-align:center;
+}
+canvas {
+  position:absolute;
+  top:0;
+  left:0;
+  z-index:-1;
+}
 </style>
 </head>
 <body>
 
-<!-- خطوط قرمز پشت صفحه -->
-<div class="line" style="animation-delay:0s;"></div>
-<div class="line" style="animation-delay:2s;"></div>
-<div class="line" style="animation-delay:4s;"></div>
+<canvas id="bgCanvas"></canvas>
 
 <div class="header">
-  <div>Are you admin?</div>
-  <div class="flag"></div>
+  <div id="adminPrompt">آیا شما ادمین هستید؟</div>
+  <div class="flag">🏴</div>
 </div>
 
 <!-- صفحه مشتری -->
@@ -84,7 +75,6 @@
   <p id="boothAddress">طبقه دوم کلاس 904</p>
   <p>ای دی روبیکای فروشگاه: @the_secret_casino</p>
   <p id="boothNumberDisplay">شماره غرفه: 0</p>
-  <button onclick="showCustomerOptions()">ادامه</button>
 </div>
 
 <!-- صفحه ورود ادمین -->
@@ -115,13 +105,50 @@
 </div>
 
 <script>
+// canvas خطوط پیچ در پیچ
+const canvas = document.getElementById('bgCanvas');
+const ctx = canvas.getContext('2d');
+let w, h;
+function resize(){ w=canvas.width=window.innerWidth; h=canvas.height=window.innerHeight; }
+window.addEventListener('resize', resize);
+resize();
+
+let lines = [];
+for(let i=0;i<15;i++){
+  lines.push({
+    x: Math.random()*w,
+    y: Math.random()*h,
+    angle: Math.random()*Math.PI*2,
+    speed: 0.5+Math.random(),
+    amplitude: 20+Math.random()*20,
+    frequency: 0.01+Math.random()*0.01,
+    phase: Math.random()*Math.PI*2,
+    color:'rgba(255,0,0,0.7)'
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,w,h);
+  lines.forEach(l=>{
+    ctx.beginPath();
+    for(let y=0;y<h;y+=5){
+      let x = l.x + Math.sin(y*l.frequency + l.phase)*l.amplitude;
+      ctx.lineTo(x, y);
+    }
+    ctx.strokeStyle = l.color;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    l.phase += 0.02;
+  });
+  requestAnimationFrame(draw);
+}
+draw();
+
 // اطلاعات محلی
 let boothNumber = localStorage.getItem('boothNumber') || 0;
 document.getElementById('boothNumberDisplay').innerText = `شماره غرفه: ${boothNumber}`;
-
 let customers = JSON.parse(localStorage.getItem('customers')||'[]');
 let revenue = parseInt(localStorage.getItem('revenue')||'0');
-
 const admins = [
   {id:'01', password:'', role:'secondary'},
   {id:'02', password:'', role:'secondary'},
@@ -129,11 +156,13 @@ const admins = [
 ];
 
 // نمایش صفحات
-function showCustomerPage(){ document.getElementById('customerPage').style.display='block'; }
-function showAdminLoginPage(){ document.getElementById('adminLoginPage').style.display='block'; }
+function showPage(id){ document.querySelectorAll('.page').forEach(p=>p.style.display='none'); document.getElementById(id).style.display='block'; }
 
 // شروع صفحه
-showCustomerPage();
+showPage('customerPage');
+
+// ادمین prompt
+document.getElementById('adminPrompt').onclick = ()=>{ showPage('adminLoginPage'); };
 
 // ورود ادمین
 function loginAdmin(){
@@ -142,15 +171,9 @@ function loginAdmin(){
   let admin = admins.find(a=>a.id===id);
   if(!admin){ alert('نام کاربری اشتباه است'); return;}
   if(admin.id==='00' && pass===admin.password){ showPage('mainAdminPage'); return;}
-  // ثبت اولین رمز برای ادمین عادی
   if(admin.password===''){ admin.password=pass; showPage('adminPage'); return;}
   if(admin.password===pass){ showPage('adminPage'); return;}
   alert('رمز اشتباه است');
-}
-
-function showPage(id){
-  document.querySelectorAll('.page').forEach(p=>p.style.display='none');
-  document.getElementById(id).style.display='block';
 }
 
 // مشتری‌ها
@@ -185,10 +208,8 @@ function setBoothNumber(){
   if(num){ boothNumber=num; localStorage.setItem('boothNumber', num); document.getElementById('boothNumberDisplay').innerText=`شماره غرفه: ${num}`;}
 }
 
-// دکمه برگشت
+// برگشت
 function logout(){ showPage('customerPage'); }
-function showCustomerOptions(){ alert('ادرس غرفه: طبقه دوم کلاس 904'); }
 </script>
-
 </body>
 </html>
