@@ -1,114 +1,68 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fa">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Secret Casino</title>
-
+<title>the_secret_casino</title>
 <style>
-body{
-margin:0;
-background:black;
-color:white;
-font-family:Arial;
-overflow:hidden;
-}
-
-/* صفحات */
-.page{
-display:none;
-height:100vh;
-width:100vw;
-padding:20px;
-box-sizing:border-box;
-}
-
-.active{
-display:block;
-}
-
-/* متن و باکس */
-.centerBox{
-height:100%;
-display:flex;
-flex-direction:column;
-justify-content:center;
-align-items:center;
-text-align:center;
-gap:25px;
-}
-
-/* دکمه */
-.btn{
-padding:12px 25px;
-background:#990000;
-border:none;
-color:white;
-font-size:18px;
-border-radius:8px;
-cursor:pointer;
-}
-
-/* لینک ادمین گوشه */
-.adminCorner{
-position:absolute;
-top:15px;
-right:15px;
-font-size:14px;
-cursor:pointer;
-color:#ff4444;
-}
-
-/* پرچم مشکی */
-.flag{
-position:absolute;
-top:0;
-left:0;
-width:45px;
-height:45px;
-background:black;
-border-right:2px solid gray;
-border-bottom:2px solid gray;
-}
-
-/* اشکال شناور */
-.shape{
-position:absolute;
-border:2px solid red;
-opacity:0.6;
-}
+  html, body { margin:0; padding:0; overflow:hidden; background:black; color:white; font-family:sans-serif;}
+  #canvas{display:block;}
 </style>
 </head>
-
 <body>
+<canvas id="canvas"></canvas>
+<script>
+const c=document.getElementById('canvas'), ctx=c.getContext('2d');
+c.width=window.innerWidth; c.height=window.innerHeight;
 
-<div class="flag"></div>
+class Shape{
+  constructor(){
+    this.x=Math.random()*c.width;
+    this.y=Math.random()*c.height;
+    this.size=Math.random()*30+20;
+    this.type=Math.floor(Math.random()*11); // 11 شکل عجیب
+    this.color=['red','green','blue','yellow','purple','orange','pink','cyan','lime','magenta','white'][Math.floor(Math.random()*11)];
+    this.corners=[1,3,4,5,6,5,3,4,2,5,6][this.type]; // تعداد گوشه‌ها برای سرعت
+    this.speed=(this.corners/2); 
+    this.angle=Math.random()*Math.PI*2;
+  }
+  move(){
+    this.x+=Math.cos(this.angle)*this.speed;
+    this.y+=Math.sin(this.angle)*this.speed;
+    if(this.x<0||this.x>c.width) this.angle=Math.PI-this.angle;
+    if(this.y<0||this.y>c.height) this.angle=-this.angle;
+  }
+  draw(){
+    ctx.beginPath();
+    ctx.strokeStyle=this.color;
+    ctx.lineWidth=2;
+    switch(this.type){
+      case 0: ctx.arc(this.x,this.y,this.size,0,Math.PI*2); break;
+      case 1: ctx.rect(this.x-this.size/2,this.y-this.size/2,this.size,this.size); break;
+      case 2: for(let i=0;i<3;i++){ let a=i*2*Math.PI/3; ctx.lineTo(this.x+this.size*Math.cos(a), this.y+this.size*Math.sin(a)); } ctx.closePath(); break;
+      case 3: for(let i=0;i<4;i++){ let a=i*2*Math.PI/4; ctx.lineTo(this.x+this.size*Math.cos(a), this.y+this.size*Math.sin(a)); } ctx.closePath(); break;
+      case 4: for(let i=0;i<5;i++){ let a=i*2*Math.PI/5; ctx.lineTo(this.x+this.size*Math.cos(a), this.y+this.size*Math.sin(a)); } ctx.closePath(); break;
+      case 5: for(let i=0;i<6;i++){ let a=i*2*Math.PI/6; ctx.lineTo(this.x+this.size*Math.cos(a), this.y+this.size*Math.sin(a)); } ctx.closePath(); break;
+      case 6: for(let i=0;i<5;i++){ let a=i*2*Math.PI/5; ctx.lineTo(this.x+this.size*Math.cos(a), this.y+this.size*Math.sin(a)*0.6); } ctx.closePath(); break;
+      case 7: for(let i=0;i<3;i++){ let a=i*2*Math.PI/3; ctx.lineTo(this.x+this.size*Math.cos(a), this.y+this.size*Math.sin(a)*1.5); } ctx.closePath(); break;
+      case 8: ctx.ellipse(this.x,this.y,this.size,this.size/2,0,0,Math.PI*2); break;
+      case 9: for(let i=0;i<5;i++){ let a=i*2*Math.PI/5; ctx.lineTo(this.x+this.size*Math.cos(a), this.y+this.size*Math.sin(a)*0.3); } ctx.closePath(); break;
+      case 10: for(let i=0;i<6;i++){ let a=i*2*Math.PI/6; ctx.lineTo(this.x+this.size*Math.cos(a)*0.5, this.y+this.size*Math.sin(a)); } ctx.closePath(); break;
+    }
+    ctx.stroke();
+  }
+}
 
-<div class="adminCorner" onclick="goPage('adminLogin')">
-Are you an admin?
-</div>
+let shapes=[]; for(let i=0;i<11;i++) shapes.push(new Shape());
 
-<!-- مشتری -->
-<div id="customer" class="page active">
-<div class="centerBox">
-
-<h1 onclick="showBooth()" style="cursor:pointer">
-Welcome to The Secret Casino
-</h1>
-
-<div id="boothInfo" style="display:none">
-<p>Booth Location: Second Floor - Class 904</p>
-<p id="boothNumber"></p>
-<p>Rubika ID: @the_secret_casino</p>
-</div>
-
-</div>
-</div>
-
-<!-- ورود ادمین -->
-<div id="adminLogin" class="page">
-<button class="btn" onclick="goBack()">Back</button>
-
+function animate(){
+  ctx.clearRect(0,0,c.width,c.height);
+  shapes.forEach(s=>{ s.move(); s.draw(); });
+  requestAnimationFrame(animate);
+}
+animate();
+</script>
+</body>
+</html>
 <div class="centerBox">
 <h2>Admin Login</h2>
 
