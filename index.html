@@ -78,7 +78,7 @@ canvas{position:absolute;top:0;left:0;z-index:0;}
 </div>
 
 <script>
-// canvas مارهای دوگانه
+// canvas مارها
 const canvas=document.getElementById('bgCanvas');
 const ctx=canvas.getContext('2d');
 let w,h;
@@ -86,18 +86,28 @@ function resize(){ w=canvas.width=window.innerWidth; h=canvas.height=window.inne
 window.addEventListener('resize',resize);
 resize();
 
+// باکس فرضی مار برای موبایل (~7 اینچ)
+const box = {x:w*0.05,y:h*0.05,width:w*0.9,height:h*0.7};
+
 class Snake{
   constructor(x,y,color){
     this.x=x; this.y=y;
     this.path=[{x,y}];
     this.color=color;
     this.angle=Math.random()*Math.PI*2;
-    this.speed=2+Math.random()*1;
+    this.speed=2+Math.random();
   }
   move(){
     this.angle+=Math.random()*0.2-0.1;
     this.x+=Math.cos(this.angle)*this.speed;
     this.y+=Math.sin(this.angle)*this.speed;
+
+    // برخورد با باکس (bounce)
+    if(this.x<box.x){ this.x=box.x; this.angle=Math.PI-this.angle; }
+    if(this.x>box.x+box.width){ this.x=box.x+box.width; this.angle=Math.PI-this.angle; }
+    if(this.y<box.y){ this.y=box.y; this.angle=-this.angle; }
+    if(this.y>box.y+box.height){ this.y=box.y+box.height; this.angle=-this.angle; }
+
     this.path.push({x:this.x,y:this.y});
     if(this.path.length>50) this.path.shift();
   }
@@ -109,6 +119,115 @@ class Snake{
     ctx.lineWidth=3;
     ctx.stroke();
   }
+}
+
+let snakes=[new Snake(box.x+box.width*0.3,box.y+box.height/2,'red'),
+            new Snake(box.x+box.width*0.7,box.y+box.height/2,'red')];
+
+function detectCollision(s1,s2){
+  for(let p1 of s1.path){
+    for(let p2 of s2.path){
+      let dx=p1.x-p2.x;
+      let dy=p1.y-p2.y;
+      if(Math.sqrt(dx*dx+dy*dy)<15) return true;
+    }
+  }
+  return false;
+}
+
+function animate(){
+  ctx.clearRect(0,0,w,h);
+  // باکس مرزی (اختیاری برای دیدن محدوده)
+  // ctx.strokeStyle='white'; ctx.strokeRect(box.x,box.y,box.width,box.height);
+
+  snakes.forEach(s=>{ s.move(); s.draw(); });
+  if(detectCollision(snakes[0],snakes[1])){
+    let newSnakes=[];
+    snakes.forEach(s=>{
+      let mid=Math.floor(s.path.length/2);
+      let p1=s.path.slice(0,mid);
+      let p2=s.path.slice(mid);
+      newSnakes.push(new Snake(p1[0].x,p1[0].y,s.color));
+      newSnakes.push(new Snake(p2[0].x,p2[0].y,s.color));
+    });
+    snakes=newSnakes.slice(0,4);
+  }
+  requestAnimationFrame(animate);
+}
+animate();
+
+// داده‌ها و ذخیره‌سازی
+let boothNumber = localStorage.getItem('boothNumber')||0;
+document.getElementById('boothNumberDisplay').innerText=`شماره غرفه: ${boothNumber}`;
+let customers=JSON.parse(localStorage.getItem('customers')||'[]');
+let revenue=parseInt(localStorage.getItem('revenue')||'0');
+
+const admins=[
+  {id:'01',password:'',role:'secondary'},
+  {id:'02',password:'',role:'secondary'},
+  {id:'00',password:'3.14159265358979323846264338',role:'main'}
+];
+
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.style.display='none');
+  document.getElementById(id).style.display='block';
+  currentPage=id;
+  if(id!=='customerPage') document.getElementById('backBtn').style.display='block';
+  else document.getElementById('backBtn').style.display='none';
+}
+let currentPage='customerPage';
+showPage('customerPage');
+
+document.getElementById('adminPrompt').onclick=()=>{ showPage('adminLoginPage'); };
+function goBack(){ showPage('customerPage'); }
+
+// توابع ورود ادمین و ثبت مشتری و تایید رمز و ...
+function loginAdmin(){
+  let id=document.getElementById('adminId').value;
+  let pass=document.getElementById('adminPass').value;
+  let admin=admins.find(a=>a.id===id);
+  if(!admin){ alert('نام کاربری اشتباه است'); return;}
+  if(admin.id==='00' && pass===admin.password){ showPage('mainAdminPage'); return;}
+  if(admin.id==='01'){ if(admin.password===''){ admin.password=pass; showPage('admin01Page'); } else if(admin.password===pass){ showPage('admin01Page'); } else { alert('رمز اشتباه است');} return;}
+  if(admin.id==='02'){ if(admin.password===''){ admin.password=pass; showPage('admin02Page'); } else if(admin.password===pass){ showPage('admin02Page'); } else { alert('رمز اشتباه است');} return;}
+  if(['03','04','05','06','07','08','09'].includes(admin.id)){ if(admin.password===''){ admin.password=pass; showPage('adminPage'); } else if(admin.password===pass){ showPage('adminPage'); } else { alert('رمز اشتباه است');} return;}
+  alert('رمز اشتباه است');
+}
+
+function registerCustomer(){
+  let name=prompt('نام مشتری:');
+  let family=prompt('نام خانوادگی:');
+  if(!name||!family) return;
+  let code=Math.random().toString(36).substring(2,4)+Math.floor(Math.random()*9000+1000);
+  customers.push({name,family,code,active:true});
+  localStorage.setItem('customers',JSON.stringify(customers));
+  alert(`مشتری ثبت شد، رمز: ${code}`);
+}
+function showCustomers(){
+  let list=customers.map(c=>`<div class="customer-card">${c.name} ${c.family}<br>رمز: ${c.code}<br>فعال: ${c.active}</div>`).join('');
+  let win=window.open('','_blank','width=400,height=600');
+  win.document.write(list);
+}
+function registerRevenue(){
+  let amount=parseInt(prompt('میزان افزایش درآمد:'));
+  if(isNaN(amount)||amount<0){ alert('فقط اعداد مثبت'); return;}
+  revenue+=amount;
+  localStorage.setItem('revenue',revenue);
+  alert(`درآمد فعلی: ${revenue}`);
+}
+function clearAllAdminPasswords(){ admins.forEach(a=>{if(a.id!=='00')a.password='';}); alert('همه رمزها پاک شدند'); }
+function setBoothNumber(){ let num=prompt('شماره غرفه جدید:'); if(num){ boothNumber=num; localStorage.setItem('boothNumber',num); document.getElementById('boothNumberDisplay').innerText=`شماره غرفه: ${num}`;} }
+function showBoothNumber(){ alert(`شماره غرفه: ${boothNumber}`);}
+function showCapacity(){ alert('ظرفیت تکمیل (مثال)'); }
+function verifyCustomerCode(){
+  let code=prompt('رمز مشتری را وارد کنید:');
+  let c=customers.find(c=>c.code===code && c.active);
+  if(c){ alert('رمز صحیح است'); c.active=false; localStorage.setItem('customers',JSON.stringify(customers)); } 
+  else alert('رمز اشتباه یا باطل شده');
+}
+</script>
+</body>
+</html>  }
 }
 
 let snakes=[new Snake(w*0.3,h*0.5,'red'),new Snake(w*0.7,h*0.5,'red')];
