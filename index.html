@@ -2,81 +2,241 @@
 <html lang="fa">
 <head>
 <meta charset="UTF-8">
-<title>The Secret Casino</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Secret Casino</title>
+
 <style>
-  html, body { margin:0; padding:0; overflow:hidden; background:black; color:white; font-family:sans-serif;}
-  #canvas{position:absolute; top:0; left:0; z-index:0;}
-  .page{position:absolute; top:0; left:0; width:100%; height:100%; z-index:1; padding:20px; box-sizing:border-box;}
-  button{padding:10px 15px; margin:5px; background:red; color:white; border:none; border-radius:5px; cursor:pointer;}
+body{
+margin:0;
+overflow:hidden;
+background:black;
+color:white;
+font-family:sans-serif;
+}
+
+/* بک گراند */
+canvas{
+position:fixed;
+top:0;
+left:0;
+z-index:0;
+}
+
+/* متن ها */
+.content{
+position:relative;
+z-index:1;
+height:100vh;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+text-align:center;
+}
+
+/* خوش آمدید */
+#welcome{
+font-size:30px;
+cursor:pointer;
+margin-bottom:20px;
+}
+
+/* آدرس */
+#address{
+display:none;
+font-size:24px;
+}
+
+/* ادمین */
+#adminBtn{
+position:fixed;
+top:10px;
+left:10px;
+z-index:2;
+cursor:pointer;
+}
+
+/* شماره غرفه */
+#booth{
+position:fixed;
+top:10px;
+right:10px;
+z-index:2;
+}
+
+/* پرچم مشکی */
+.blackFlag{
+position:fixed;
+top:0;
+right:0;
+width:25px;
+height:25px;
+background:black;
+z-index:3;
+}
+
+/* آیدی پایین */
+#id{
+position:fixed;
+bottom:5px;
+width:100%;
+text-align:center;
+font-size:14px;
+}
+
+/* صفحه ورود ادمین */
+#adminPage{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:black;
+display:none;
+z-index:5;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+}
+
+input{
+padding:10px;
+margin:5px;
+}
+
+.error{
+color:red;
+}
 </style>
 </head>
-<body>
-<canvas id="canvas"></canvas>
 
-<div class="page" id="customerPage">
-  <h1>خوش آمدید به کازینوی امن</h1>
-  <p id="boothNumberDisplay"></p>
-  <p>آیدی روبیکا: @the_secret_casino</p>
-  <p>آدرس غرفه: طبقه دوم کلاس ۹۰۴</p>
-  <button id="adminPrompt">Are you an admin?</button>
+<body>
+
+<canvas id="bg"></canvas>
+
+<div class="blackFlag"></div>
+
+<div id="booth">شماره غرفه: 1</div>
+<div id="adminBtn">Are you an admin?</div>
+
+<div class="content">
+<div id="welcome">خوش آمدید</div>
+<div id="address">طبقه دوم _ کلاس ۹۰۴</div>
+</div>
+
+<div id="id">@the_secret_casino</div>
+
+<!-- صفحه ادمین -->
+<div id="adminPage">
+<input id="user" placeholder="Username">
+<input id="pass" placeholder="Password" type="password">
+<div id="msg" class="error"></div>
+<button onclick="checkAdmin()">Login</button>
+<button onclick="closeAdmin()">Back</button>
 </div>
 
 <script>
-// بک‌گراند متحرک با 11 شکل عجیب و رنگی
-const c=document.getElementById('canvas'), ctx=c.getContext('2d');
-c.width=window.innerWidth; c.height=window.innerHeight;
+
+/* خوش آمدید */
+welcome.onclick=()=>{
+address.style.display="block"
+}
+
+/* باز شدن صفحه ادمین */
+adminBtn.onclick=()=>{
+adminPage.style.display="flex"
+}
+
+/* بستن */
+function closeAdmin(){
+adminPage.style.display="none"
+}
+
+/* چک ادمین */
+function checkAdmin(){
+let u=user.value
+let valid=["01","02","03","04","05","06","07","08","09"]
+
+if(valid.includes(u))
+msg.innerText="رمز اشتباه است"
+else
+msg.innerText="یوزرنیم معتبر نیست"
+}
+
+/* بک گراند متحرک */
+const c=document.getElementById("bg")
+const ctx=c.getContext("2d")
+c.width=innerWidth
+c.height=innerHeight
 
 class Shape{
-  constructor(){
-    this.x=Math.random()*c.width;
-    this.y=Math.random()*c.height;
-    this.size=Math.random()*30+20;
-    this.type=Math.floor(Math.random()*11);
-    this.color=['red','green','blue','yellow','purple','orange','pink','cyan','lime','magenta','white'][this.type];
-    this.corners=[1,3,4,5,6,5,3,4,2,5,6][this.type];
-    this.speed=this.corners/2;
-    this.angle=Math.random()*Math.PI*2;
-  }
-  move(){
-    this.x+=Math.cos(this.angle)*this.speed;
-    this.y+=Math.sin(this.angle)*this.speed;
-    if(this.x<0||this.x>c.width) this.angle=Math.PI-this.angle;
-    if(this.y<0||this.y>c.height) this.angle=-this.angle;
-  }
-  draw(){
-    ctx.beginPath(); ctx.strokeStyle=this.color; ctx.lineWidth=2;
-    if(this.type===0) ctx.arc(this.x,this.y,this.size,0,Math.PI*2);
-    else if(this.type===1) ctx.rect(this.x-this.size/2,this.y-this.size/2,this.size,this.size);
-    else {
-      let n=this.corners;
-      for(let i=0;i<n;i++){
-        let a=i*2*Math.PI/n;
-        ctx.lineTo(this.x+this.size*Math.cos(a), this.y+this.size*Math.sin(a));
-      }
-      ctx.closePath();
-    }
-    ctx.stroke();
-  }
+constructor(){
+this.x=Math.random()*c.width
+this.y=Math.random()*c.height
+this.s=20+Math.random()*20
+this.vx=Math.random()*2-1
+this.vy=Math.random()*2-1
+this.color=`hsl(${Math.random()*360},80%,50%)`
+}
+move(){
+this.x+=this.vx
+this.y+=this.vy
+if(this.x<0||this.x>c.width) this.vx*=-1
+if(this.y<0||this.y>c.height) this.vy*=-1
+}
+draw(){
+ctx.strokeStyle=this.color
+ctx.beginPath()
+ctx.arc(this.x,this.y,this.s,0,6.28)
+ctx.stroke()
+}
 }
 
-let shapes=[]; for(let i=0;i<11;i++) shapes.push(new Shape());
+let shapes=[]
+for(let i=0;i<11;i++) shapes.push(new Shape())
 
 function animate(){
-  ctx.clearRect(0,0,c.width,c.height);
-  shapes.forEach(s=>{ s.move(); s.draw(); });
-  requestAnimationFrame(animate);
+ctx.clearRect(0,0,c.width,c.height)
+shapes.forEach(s=>{
+s.move()
+s.draw()
+})
+requestAnimationFrame(animate)
 }
-animate();
+animate()
 
-// داده‌ها
-let boothNumber=localStorage.getItem('boothNumber')||0;
-document.getElementById('boothNumberDisplay').innerText=`شماره غرفه: ${boothNumber}`;
+/* پرچم شاهنشاهی شناور ساده */
+class Flag{
+constructor(){
+this.x=Math.random()*c.width
+this.y=Math.random()*c.height
+this.vx=0.5
+this.vy=0.5
+}
+move(){
+this.x+=this.vx
+this.y+=this.vy
+if(this.x<0||this.x>c.width) this.vx*=-1
+if(this.y<0||this.y>c.height) this.vy*=-1
+}
+draw(){
+ctx.fillStyle="green"
+ctx.fillRect(this.x,this.y,15,5)
+ctx.fillStyle="white"
+ctx.fillRect(this.x,this.y+5,15,5)
+ctx.fillStyle="red"
+ctx.fillRect(this.x,this.y+10,15,5)
+}
+}
 
-// دکمه Admin (همیشه رمز اشتباه)
-document.getElementById('adminPrompt').onclick=()=>{
-  alert('رمز اشتباه است!');
-};
+let flag=new Flag()
+
+setInterval(()=>{
+flag.move()
+flag.draw()
+},50)
+
 </script>
+
 </body>
 </html>
