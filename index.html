@@ -1,114 +1,165 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fa">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Casino</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>صفحه خوش آمدید</title>
 <style>
-body{
-margin:0;
-background:black;
-color:white;
-font-family:sans-serif;
-overflow:hidden;
-}
-
-canvas{
-position:fixed;
-top:0;
-left:0;
-z-index:0;
-}
-
-.page{
-position:absolute;
-width:100%;
-height:100%;
-display:flex;
-flex-direction:column;
-justify-content:center;
-align-items:center;
-z-index:2;
-}
-
-.top{
-position:fixed;
-z-index:3;
-font-size:14px;
-cursor:pointer;
-}
-
-#adminBtn{top:10px;left:10px;}
-#booth{top:10px;right:10px;}
-#langBtn{top:10px;left:50%;transform:translateX(-50%);}
-
-.flag{
-position:fixed;
-top:0;
-right:0;
-width:25px;
-height:25px;
-background:black;
-z-index:4;
-}
-
-.welcome{font-size:28px;cursor:pointer;}
-.addr{display:none;font-size:22px;}
-
-.bottom{
-position:fixed;
-bottom:5px;
-width:100%;
-text-align:center;
-font-size:13px;
-z-index:3;
-}
-
-#adminPage{
-position:fixed;
-width:100%;
-height:100%;
-background:black;
-display:none;
-flex-direction:column;
-justify-content:center;
-align-items:center;
-z-index:5;
-}
-
-input{padding:8px;margin:5px;}
-.error{color:red;}
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: black;
+    color: white;
+    font-family: Tahoma, sans-serif;
+    overflow: hidden;
+  }
+  h1 {
+    color: red;
+    text-align: center;
+    margin-top: 50px;
+    font-size: 2.5em;
+    cursor: pointer;
+  }
+  #top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    font-size: 1.2em;
+  }
+  #flag {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 30px;
+    background-color: black; /* پرچم مشکی */
+    border: 1px solid white;
+  }
+  .shape {
+    position: absolute;
+    border-radius: 10%;
+    opacity: 0.7;
+  }
+  #center-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2em;
+    text-align: center;
+  }
+  #bottom-text {
+    position: absolute;
+    bottom: 10px;
+    width: 100%;
+    text-align: center;
+    font-size: 1.2em;
+  }
+  #admin-login {
+    display: none;
+    position: fixed;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #222;
+    padding: 20px;
+    border: 2px solid white;
+    z-index: 100;
+  }
+  #admin-login input {
+    display: block;
+    margin: 10px 0;
+    width: 100%;
+    padding: 5px;
+  }
+  #admin-login button {
+    padding: 5px 10px;
+  }
 </style>
 </head>
-
 <body>
 
-<canvas id="bg"></canvas>
-<div class="flag"></div>
-
-<div id="adminBtn" class="top"></div>
-<div id="langBtn" class="top"></div>
-<div id="booth" class="top"></div>
-
-<!-- English -->
-<div class="page" id="en">
-<div class="welcome" onclick="showAddr('enAddr')" id="welcomeEn"></div>
-<div id="enAddr" class="addr"></div>
+<div id="top-bar">
+  <span id="admin-btn" style="cursor:pointer;">آیا شما ادمین هستید؟</span>
+  <span>شماره غرفه: <span id="booth-number">904</span></span> <!-- شماره غرفه را اینجا تغییر دهید -->
 </div>
 
-<!-- Persian -->
-<div class="page" id="fa" style="display:none">
-<div class="welcome" onclick="showAddr('faAddr')" id="welcomeFa"></div>
-<div id="faAddr" class="addr"></div>
+<div id="flag"></div>
+
+<h1 id="welcome-text">خوش آمدید</h1>
+
+<div id="center-text">طبقه دوم_کلاس ۹۰۴</div>
+
+<div id="bottom-text">ID Rubika: @the_secret_casino</div>
+
+<div id="admin-login">
+  <label>نام کاربری:</label>
+  <input type="text" id="username">
+  <label>رمز عبور:</label>
+  <input type="password" id="password">
+  <button onclick="checkAdmin()">ورود</button>
+  <p id="admin-msg" style="color:red;"></p>
 </div>
 
-<div class="bottom">@the_secret_casino</div>
+<script>
+  // تغییر به صفحه اصلی وقتی متن خوش آمدید کلیک شد
+  document.getElementById('welcome-text').addEventListener('click', function() {
+    window.location.href = "main.html"; // مسیر صفحه اصلی سایت
+  });
 
-<!-- Admin -->
-<div id="adminPage">
-<input id="user" placeholder="Username">
-<input id="pass" placeholder="Password" type="password">
+  // نمایش فرم ادمین
+  document.getElementById('admin-btn').addEventListener('click', function() {
+    document.getElementById('admin-login').style.display = 'block';
+  });
+
+  function checkAdmin() {
+    const user = document.getElementById('username').value;
+    const pass = document.getElementById('password').value;
+    if(/^0[1-9]$/.test(user)) {
+      document.getElementById('admin-msg').style.color = 'green';
+      document.getElementById('admin-msg').textContent = 'سایت در حال تکمیل است';
+    } else {
+      document.getElementById('admin-msg').style.color = 'red';
+      document.getElementById('admin-msg').textContent = 'نام کاربری صحیح نمی‌باشد';
+    }
+  }
+
+  // ایجاد اشکال تصادفی
+  const colors = ['red','green','blue','yellow','purple','orange','rgb(123,45,67)'];
+  const shapes = [];
+  for(let i=0;i<7;i++){
+    let s = document.createElement('div');
+    s.className = 'shape';
+    s.style.width = (20+Math.random()*60)+'px';
+    s.style.height = (20+Math.random()*60)+'px';
+    s.style.backgroundColor = colors[i];
+    s.style.top = Math.random()*window.innerHeight+'px';
+    s.style.left = Math.random()*window.innerWidth+'px';
+    document.body.appendChild(s);
+    shapes.push(s);
+  }
+
+  // حرکت اشکال با تکان گوشی
+  window.addEventListener('deviceorientation', function(event){
+    shapes.forEach(function(s,i){
+      let x = parseFloat(s.style.left);
+      let y = parseFloat(s.style.top);
+      x += event.gamma/5; // افقی
+      y += event.beta/5;  // عمودی
+      if(x<0)x=0;
+      if(x>window.innerWidth-50)x=window.innerWidth-50;
+      if(y<0)y=0;
+      if(y>window.innerHeight-50)y=window.innerHeight-50;
+      s.style.left = x+'px';
+      s.style.top = y+'px';
+    });
+  });
+</script>
+
+</body>
+</html><input id="pass" placeholder="Password" type="password">
 <div id="msg" class="error"></div>
 <button onclick="checkAdmin()">Login</button>
 <button onclick="closeAdmin()">Back</button>
