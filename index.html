@@ -1,114 +1,250 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>سایت کازینو</title>
+<title>The Secret Casino</title>
 <style>
+  /* General Styles */
   body {
     margin: 0;
-    font-family: sans-serif;
+    padding: 0;
     background-color: #000;
-    color: #0ff;
-    overflow: hidden;
+    font-family: Arial, sans-serif;
+    color: #0ff; /* default neon cyan for text */
+    overflow-x: hidden;
   }
+
+  /* Pages */
   .page {
     display: none;
     width: 100%;
     height: 100vh;
     position: relative;
-    padding: 20px;
-    box-sizing: border-box;
   }
-  .active { display: block; }
-
-  /* صفحه اطلاعات */
-  #infoPage {
+  .active {
     display: block;
   }
-  .info-box {
-    position: relative;
-    width: calc(100% - 40px);
-    height: calc(100% - 40px);
-    margin: 0 auto;
-    border: 2px solid rgba(255,255,255,0.3);
+
+  /* Info Page Box */
+  #info-box {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    bottom: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
     border-radius: 15px;
+    background-color: rgba(255, 255, 255, 0.05);
     overflow: hidden;
-    background-color: #111;
   }
+
+  /* Top elements */
+  .top-left, .top-right {
+    position: absolute;
+    top: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #0f0;
+    z-index: 10;
+  }
+  .top-left { left: 15px; }
+  .top-right { right: 15px; }
+
+  .top-left button {
+    background-color: transparent;
+    border: 1px solid #0f0;
+    color: #0f0;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 14px;
+  }
+
+  /* Center text */
+  #info-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 24px;
+    color: #ff0; /* neon yellow */
+    font-weight: bold;
+    text-align: center;
+  }
+
+  /* Bottom text */
+  #info-bottom {
+    position: absolute;
+    bottom: 10px;
+    width: 100%;
+    text-align: center;
+    font-size: 16px;
+    color: #f0f;
+    font-weight: bold;
+  }
+
+  /* Emoji Styles */
   .emoji {
     position: absolute;
     font-size: 40px;
-    user-select: none;
-  }
-  .top-left, .top-right, .bottom {
-    position: absolute;
-    font-weight: bold;
-    color: #0ff;
-  }
-  .top-left { top: 10px; left: 20px; }
-  .top-right { top: 10px; right: 20px; }
-  .bottom { bottom: 10px; width: 100%; text-align: center; }
-  .center-text {
-    position: absolute;
-    top: 50%;
-    width: 100%;
-    text-align: center;
-    transform: translateY(-50%);
-    font-size: 18px;
-    color: #0ff;
-  }
-  .link-button {
-    color: #f0f;
-    text-decoration: underline;
-    cursor: pointer;
+    pointer-events: none;
   }
 
-  /* صفحه ادمین */
-  #adminPage {
-    display: none;
-    text-align: center;
-    padding-top: 50px;
-  }
-  .admin-box {
-    display: inline-block;
-    background-color: #111;
+  /* Admin Page */
+  #admin-box {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    max-width: 300px;
     padding: 20px;
     border: 2px solid #0ff;
     border-radius: 10px;
     text-align: center;
-    width: 90%;
-    max-width: 300px;
+    background-color: rgba(255, 255, 255, 0.05);
   }
-  .admin-box input {
+  #admin-box h2 {
+    margin-bottom: 15px;
+    color: #0f0;
+  }
+  #admin-box input {
     width: 80%;
-    padding: 8px;
-    margin: 10px 0;
-    border-radius: 5px;
+    padding: 10px;
+    margin: 8px 0;
     border: 1px solid #0ff;
-    background-color: #000;
-    color: #0ff;
-  }
-  .admin-box button {
-    padding: 8px 20px;
-    border: none;
     border-radius: 5px;
-    background-color: #0ff;
-    color: #000;
-    font-weight: bold;
+    background-color: #111;
+    color: #0ff;
+    font-size: 14px;
+  }
+  #admin-box button {
+    padding: 10px 20px;
+    margin-top: 10px;
+    border: 1px solid #0f0;
+    border-radius: 5px;
+    background-color: #000;
+    color: #0f0;
+    font-size: 16px;
     cursor: pointer;
   }
-  .admin-box button:hover {
-    background-color: #0cc;
-  }
-  #adminMessage {
+  #admin-msg {
     margin-top: 10px;
-    color: #f0f;
+    font-weight: bold;
+    color: #f00;
   }
 </style>
 </head>
 <body>
 
+<!-- Info Page -->
+<div id="info-page" class="page active">
+  <div id="info-box">
+    <div class="top-left">
+      <button onclick="showPage('admin-page')">Are you an admin?</button>
+    </div>
+    <div class="top-right">
+      Booth number: <span id="booth-number">07</span>
+    </div>
+    <div id="info-center">طبقه دوم کلاس ۹۰۴</div>
+    <div id="info-bottom">ID Rubika: @the_secret_casino</div>
+  </div>
+</div>
+
+<!-- Admin Page -->
+<div id="admin-page" class="page">
+  <div id="admin-box">
+    <h2>Admin Login</h2>
+    <input type="text" id="admin-username" placeholder="Username"><br>
+    <input type="password" id="admin-password" placeholder="Password"><br>
+    <button onclick="adminLogin()">Login</button>
+    <div id="admin-msg"></div>
+  </div>
+</div>
+
+<script>
+  /* Page Navigation */
+  function showPage(pageId) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(pageId).classList.add('active');
+  }
+
+  /* Admin Logic */
+  function adminLogin() {
+    const username = document.getElementById('admin-username').value;
+    const msg = document.getElementById('admin-msg');
+    if (/^0[1-9]$/.test(username)) {
+      msg.textContent = "Site is under construction";
+      msg.style.color = '#ff0';
+    } else {
+      msg.textContent = "Invalid username or password";
+      msg.style.color = '#f00';
+    }
+  }
+
+  /* Emoji Physics */
+  const box = document.getElementById('info-box');
+  const emojis = ['🦁','☀️','🎲','🃏','💰','🎰','🤑','🀄','💵','🪙'];
+  const emojiElements = [];
+  const physics = [];
+
+  const boxRect = () => box.getBoundingClientRect();
+
+  for (let i=0; i<emojis.length; i++) {
+    const span = document.createElement('span');
+    span.classList.add('emoji');
+    span.textContent = emojis[i];
+    box.appendChild(span);
+
+    const rect = boxRect();
+    const mass = 0.5 + Math.random()*1.5;
+    physics.push({
+      x: Math.random()*(rect.width-40),
+      y: Math.random()*(rect.height-40),
+      vx: (Math.random()-0.5)*2,
+      vy: 0,
+      mass: mass,
+      elem: span
+    });
+    span.style.left = physics[i].x + 'px';
+    span.style.top = physics[i].y + 'px';
+    emojiElements.push(span);
+  }
+
+  let tiltX = 0;
+  let tiltY = 0;
+
+  window.addEventListener('deviceorientation', e => {
+    tiltX = e.gamma ? e.gamma/90 : 0;
+    tiltY = e.beta ? e.beta/90 : 0;
+  });
+
+  function animate() {
+    const rect = boxRect();
+    physics.forEach(p => {
+      // gravity + device tilt
+      p.vy += 0.05 * p.mass + tiltY*0.2;
+      p.vx += tiltX*0.2;
+
+      p.x += p.vx;
+      p.y += p.vy;
+
+      // collision with edges
+      if(p.x < 0) { p.x=0; p.vx*=-0.5; }
+      if(p.x > rect.width-40) { p.x=rect.width-40; p.vx*=-0.5; }
+      if(p.y < 0) { p.y=0; p.vy*=-0.5; }
+      if(p.y > rect.height-40) { p.y=rect.height-40; p.vy*=-0.5; }
+
+      p.elem.style.left = p.x + 'px';
+      p.elem.style.top = p.y + 'px';
+    });
+    requestAnimationFrame(animate);
+  }
+  animate();
+</script>
+
+</body>
+</html>
 <!-- صفحه اطلاعات -->
 <div id="infoPage" class="page active">
   <div class="top-left"><span class="link-button" id="toAdmin">ورود ادمین</span></div>
