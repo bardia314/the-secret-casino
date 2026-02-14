@@ -3,556 +3,310 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>صفحه خوش آمدید</title>
+<title>The Secret Casino</title>
+
 <style>
-  body {
-    margin: 0;
-    padding: 0;
-    background-color: black;
-    color: white;
-    font-family: Tahoma, sans-serif;
-    overflow: hidden;
-  }
-  h1 {
-    color: red;
-    text-align: center;
-    margin-top: 50px;
-    font-size: 2.5em;
-    cursor: pointer;
-  }
-  #top-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 20px;
-    font-size: 1.2em;
-  }
-  #flag {
-    position: absolute;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 50px;
-    height: 30px;
-    background-color: black; /* پرچم مشکی */
-    border: 1px solid white;
-  }
-  .shape {
-    position: absolute;
-    border-radius: 10%;
-    opacity: 0.7;
-  }
-  #center-text {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 2em;
-    text-align: center;
-  }
-  #bottom-text {
-    position: absolute;
-    bottom: 10px;
-    width: 100%;
-    text-align: center;
-    font-size: 1.2em;
-  }
-  #admin-login {
-    display: none;
-    position: fixed;
-    top: 40%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #222;
-    padding: 20px;
-    border: 2px solid white;
-    z-index: 100;
-  }
-  #admin-login input {
-    display: block;
-    margin: 10px 0;
-    width: 100%;
-    padding: 5px;
-  }
-  #admin-login button {
-    padding: 5px 10px;
-  }
-</style>
-</head>
-<body>
 
-<div id="top-bar">
-  <span id="admin-btn" style="cursor:pointer;">آیا شما ادمین هستید؟</span>
-  <span>شماره غرفه: <span id="booth-number">904</span></span> <!-- شماره غرفه را اینجا تغییر دهید -->
-</div>
-
-<div id="flag"></div>
-
-<h1 id="welcome-text">خوش آمدید</h1>
-
-<div id="center-text">طبقه دوم_کلاس ۹۰۴</div>
-
-<div id="bottom-text">ID Rubika: @the_secret_casino</div>
-
-<div id="admin-login">
-  <label>نام کاربری:</label>
-  <input type="text" id="username">
-  <label>رمز عبور:</label>
-  <input type="password" id="password">
-  <button onclick="checkAdmin()">ورود</button>
-  <p id="admin-msg" style="color:red;"></p>
-</div>
-
-<script>
-  // تغییر به صفحه اصلی وقتی متن خوش آمدید کلیک شد
-  document.getElementById('welcome-text').addEventListener('click', function() {
-    window.location.href = "main.html"; // مسیر صفحه اصلی سایت
-  });
-
-  // نمایش فرم ادمین
-  document.getElementById('admin-btn').addEventListener('click', function() {
-    document.getElementById('admin-login').style.display = 'block';
-  });
-
-  function checkAdmin() {
-    const user = document.getElementById('username').value;
-    const pass = document.getElementById('password').value;
-    if(/^0[1-9]$/.test(user)) {
-      document.getElementById('admin-msg').style.color = 'green';
-      document.getElementById('admin-msg').textContent = 'سایت در حال تکمیل است';
-    } else {
-      document.getElementById('admin-msg').style.color = 'red';
-      document.getElementById('admin-msg').textContent = 'نام کاربری صحیح نمی‌باشد';
-    }
-  }
-
-  // ایجاد اشکال تصادفی
-  const colors = ['red','green','blue','yellow','purple','orange','rgb(123,45,67)'];
-  const shapes = [];
-  for(let i=0;i<7;i++){
-    let s = document.createElement('div');
-    s.className = 'shape';
-    s.style.width = (20+Math.random()*60)+'px';
-    s.style.height = (20+Math.random()*60)+'px';
-    s.style.backgroundColor = colors[i];
-    s.style.top = Math.random()*window.innerHeight+'px';
-    s.style.left = Math.random()*window.innerWidth+'px';
-    document.body.appendChild(s);
-    shapes.push(s);
-  }
-
-  // حرکت اشکال با تکان گوشی
-  window.addEventListener('deviceorientation', function(event){
-    shapes.forEach(function(s,i){
-      let x = parseFloat(s.style.left);
-      let y = parseFloat(s.style.top);
-      x += event.gamma/5; // افقی
-      y += event.beta/5;  // عمودی
-      if(x<0)x=0;
-      if(x>window.innerWidth-50)x=window.innerWidth-50;
-      if(y<0)y=0;
-      if(y>window.innerHeight-50)y=window.innerHeight-50;
-      s.style.left = x+'px';
-      s.style.top = y+'px';
-    });
-  });
-</script>
-
-</body>
-</html><input id="pass" placeholder="Password" type="password">
-<div id="msg" class="error"></div>
-<button onclick="checkAdmin()">Login</button>
-<button onclick="closeAdmin()">Back</button>
-</div>
-
-<script>
-
-/* ===== زبان ===== */
-
-let lang="en"
-
-const text={
-en:{
-admin:"Are you an admin?",
-booth:"Booth Number",
-welcome:"Welcome",
-addr:"Second Floor - Class 904",
-langBtn:"فارسی"
-},
-fa:{
-admin:"آیا شما ادمین هستید؟",
-booth:"شماره غرفه",
-welcome:"خوش آمدید",
-addr:"طبقه دوم - کلاس ۹۰۴",
-langBtn:"English"
-}
+body{
+    margin:0;
+    font-family:sans-serif;
+    background:black;
+    overflow:hidden;
 }
 
-function updateLang(){
+/* صفحات */
 
-adminBtn.innerText=text[lang].admin
-booth.innerText=text[lang].booth+" : 1"
-langBtn.innerText=text[lang].langBtn
-
-welcomeEn.innerText=text.en.welcome
-enAddr.innerText=text.en.addr
-
-welcomeFa.innerText=text.fa.welcome
-faAddr.innerText=text.fa.addr
-
-if(lang==="en"){
-en.style.display="flex"
-fa.style.display="none"
-}else{
-fa.style.display="flex"
-en.style.display="none"
-}
+.page{
+    display:none;
+    position:absolute;
+    inset:0;
 }
 
-langBtn.onclick=()=>{
-lang = lang==="en" ? "fa" : "en"
-updateLang()
+.show{
+    display:block;
 }
 
-updateLang()
+/* صفحه خوش آمدید */
 
-/* خوش آمد */
-function showAddr(id){
-document.getElementById(id).style.display="block"
+#welcome{
+    color:red;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:40px;
+    font-weight:bold;
 }
 
-/* ===== Admin ===== */
+/* صفحه اطلاعات */
 
-adminBtn.onclick=()=>adminPage.style.display="flex"
-
-function closeAdmin(){
-adminPage.style.display="none"
-user.value=""
-pass.value=""
-msg.innerText=""
+#info{
+    color:#00ffcc;
 }
 
-function checkAdmin(){
-let valid=["01","02","03","04","05","06","07","08","09"]
-
-if(valid.includes(user.value))
-msg.innerText="Wrong password"
-else
-msg.innerText="Invalid username"
+.top{
+    position:absolute;
+    width:100%;
+    top:10px;
+    display:flex;
+    justify-content:space-between;
+    padding:0 15px;
+    font-size:18px;
 }
 
-/* ===== بک گراند ===== */
-
-const c=document.getElementById("bg")
-const ctx=c.getContext("2d")
-
-function resize(){
-c.width=innerWidth
-c.height=innerHeight
-}
-resize()
-window.onresize=resize
-
-class Shape{
-constructor(){
-this.x=Math.random()*c.width
-this.y=Math.random()*c.height
-this.size=Math.random()*25+15
-this.corners=Math.floor(Math.random()*6)+1
-this.speed=this.corners/2
-this.angle=Math.random()*Math.PI*2
-this.color=`hsl(${Math.random()*360},80%,60%)`
+.center{
+    position:absolute;
+    width:100%;
+    top:40%;
+    text-align:center;
+    font-size:22px;
 }
 
-move(){
-this.x+=Math.cos(this.angle)*this.speed
-this.y+=Math.sin(this.angle)*this.speed
-
-if(this.x<0||this.x>c.width) this.angle=Math.PI-this.angle
-if(this.y<0||this.y>c.height) this.angle=-this.angle
+.bottom{
+    position:absolute;
+    bottom:10px;
+    width:100%;
+    text-align:center;
+    color:white;
 }
 
-draw(){
-ctx.beginPath()
-ctx.arc(this.x,this.y,this.size,0,Math.PI*2)
-ctx.strokeStyle=this.color
-ctx.stroke()
-}
+.flag{
+    font-size:40px;
 }
 
-let shapes=[]
-for(let i=0;i<11;i++) shapes.push(new Shape())
+/* ایموجی باکس */
 
-function animate(){
-ctx.clearRect(0,0,c.width,c.height)
-shapes.forEach(s=>{
-s.move()
-s.draw()
-})
-requestAnimationFrame(animate)
-}
-animate()
-
-</script>
-
-</body>
-</html>input{
-padding:10px;
-margin:5px;
+#box{
+    position:absolute;
+    inset:0;
+    border:2px solid rgba(255,255,255,0.15);
+    overflow:hidden;
 }
 
-.error{
-color:red;
+.emoji{
+    position:absolute;
+    font-size:28px;
+    user-select:none;
 }
+
+/* ادمین */
+
+#admin{
+    color:#00ffcc;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.adminBox{
+    border:1px solid #00ffcc;
+    padding:30px;
+    border-radius:10px;
+    text-align:center;
+}
+
+input{
+    margin:10px;
+    padding:10px;
+    background:black;
+    border:1px solid #00ffcc;
+    color:white;
+}
+
+button{
+    padding:10px 20px;
+    background:#00ffcc;
+    border:none;
+    cursor:pointer;
+}
+
+#msg{
+    margin-top:10px;
+    color:yellow;
+}
+
+.linkBtn{
+    background:none;
+    border:none;
+    color:#ffcc00;
+    font-size:16px;
+}
+
 </style>
 </head>
 
 <body>
 
-<canvas id="bg"></canvas>
+<!-- صفحه خوش آمدید -->
 
-<div class="blackFlag"></div>
-
-<div id="adminBtn">Are you an admin?</div>
-<div id="langBtn">فارسی</div>
-<div id="booth">Booth Number: 1</div>
-
-<!-- English Page -->
-<div class="page" id="enPage">
-<div class="welcome" onclick="showAddress('en')">Welcome</div>
-<div class="address" id="enAddr">Second Floor - Class 904</div>
+<div id="welcome" class="page show" onclick="openInfo()">
+خوش آمدید
 </div>
 
-<!-- Persian Page -->
-<div class="page" id="faPage" style="display:none;">
-<div class="welcome" onclick="showAddress('fa')">خوش آمدید</div>
-<div class="address" id="faAddr">طبقه دوم - کلاس ۹۰۴</div>
+
+<!-- صفحه اطلاعات -->
+
+<div id="info" class="page">
+
+<div id="box"></div>
+
+<div class="top">
+<div>
+<button class="linkBtn" onclick="openAdmin()">آیا شما ادمین هستید؟</button>
 </div>
 
-<div class="bottomID">@the_secret_casino</div>
-
-<!-- Admin -->
-<div id="adminPage">
-<input id="user" placeholder="Username">
-<input id="pass" placeholder="Password" type="password">
-<div id="msg" class="error"></div>
-<button onclick="checkAdmin()">Login</button>
-<button onclick="closeAdmin()">Back</button>
+<div>
+شماره غرفه : <span id="num"></span>
+</div>
 </div>
 
-<script>
-
-/* زبان */
-langBtn.onclick=()=>{
-if(faPage.style.display==="none"){
-faPage.style.display="flex"
-enPage.style.display="none"
-langBtn.innerText="English"
-}else{
-faPage.style.display="none"
-enPage.style.display="flex"
-langBtn.innerText="فارسی"
-}
-}
-
-/* خوش آمد */
-function showAddress(lang){
-if(lang==="en") enAddr.style.display="block"
-else faAddr.style.display="block"
-}
-
-/* Admin */
-adminBtn.onclick=()=>{
-adminPage.style.display="flex"
-}
-
-function closeAdmin(){
-adminPage.style.display="none"
-}
-
-function checkAdmin(){
-let valid=["01","02","03","04","05","06","07","08","09"]
-if(valid.includes(user.value))
-msg.innerText="Wrong password"
-else
-msg.innerText="Invalid username"
-}
-
-/* بک گراند قبلی */
-const c=document.getElementById('bg')
-const ctx=c.getContext('2d')
-c.width=innerWidth
-c.height=innerHeight
-
-class Shape{
-constructor(){
-this.x=Math.random()*c.width
-this.y=Math.random()*c.height
-this.size=Math.random()*30+20
-this.type=Math.floor(Math.random()*11)
-this.color=['red','green','blue','yellow','purple','orange','pink','cyan','lime','magenta','white'][this.type]
-this.corners=[1,3,4,5,6,5,3,4,2,5,6][this.type]
-this.speed=this.corners/2
-this.angle=Math.random()*Math.PI*2
-}
-move(){
-this.x+=Math.cos(this.angle)*this.speed
-this.y+=Math.sin(this.angle)*this.speed
-if(this.x<0||this.x>c.width) this.angle=Math.PI-this.angle
-if(this.y<0||this.y>c.height) this.angle=-this.angle
-}
-draw(){
-ctx.beginPath()
-ctx.strokeStyle=this.color
-ctx.lineWidth=2
-ctx.arc(this.x,this.y,this.size,0,Math.PI*2)
-ctx.stroke()
-}
-}
-
-let shapes=[]
-for(let i=0;i<11;i++) shapes.push(new Shape())
-
-function animate(){
-ctx.clearRect(0,0,c.width,c.height)
-shapes.forEach(s=>{
-s.move()
-s.draw()
-})
-requestAnimationFrame(animate)
-}
-animate()
-
-</script>
-
-</body>
-</html></head>
-
-<body>
-
-<canvas id="bg"></canvas>
-
-<div class="blackFlag"></div>
-
-<div id="booth">شماره غرفه: 1</div>
-<div id="adminBtn">Are you an admin?</div>
-
-<div class="content">
-<div id="welcome">خوش آمدید</div>
-<div id="address">طبقه دوم _ کلاس ۹۰۴</div>
+<div class="center">
+<div class="flag">🏴</div>
+<br>
+طبقه دوم_کلاس ۹۰۴
 </div>
 
-<div id="id">@the_secret_casino</div>
+<div class="bottom">
+ID Rubika: @the_secret_casino
+</div>
+
+</div>
+
 
 <!-- صفحه ادمین -->
-<div id="adminPage">
-<input id="user" placeholder="Username">
-<input id="pass" placeholder="Password" type="password">
-<div id="msg" class="error"></div>
-<button onclick="checkAdmin()">Login</button>
-<button onclick="closeAdmin()">Back</button>
+
+<div id="admin" class="page">
+
+<div class="adminBox">
+
+<h2>ورود ادمین</h2>
+
+<input id="user" placeholder="نام کاربری"><br>
+<input id="pass" type="password" placeholder="رمز عبور"><br>
+
+<button onclick="login()">ورود</button>
+
+<div id="msg"></div>
+
 </div>
+
+</div>
+
+
 
 <script>
 
-/* خوش آمدید */
-welcome.onclick=()=>{
-address.style.display="block"
+/* تغییر صفحه */
+
+function show(id){
+
+    document.querySelectorAll(".page")
+    .forEach(p=>p.classList.remove("show"));
+
+    document.getElementById(id)
+    .classList.add("show");
 }
 
-/* باز شدن صفحه ادمین */
-adminBtn.onclick=()=>{
-adminPage.style.display="flex"
+function openInfo(){
+    show("info");
 }
 
-/* بستن */
-function closeAdmin(){
-adminPage.style.display="none"
+function openAdmin(){
+    show("admin");
 }
 
-/* چک ادمین */
-function checkAdmin(){
-let u=user.value
-let valid=["01","02","03","04","05","06","07","08","09"]
 
-if(valid.includes(u))
-msg.innerText="رمز اشتباه است"
-else
-msg.innerText="یوزرنیم معتبر نیست"
-}
+/* شماره غرفه */
 
-/* بک گراند متحرک */
-const c=document.getElementById("bg")
-const ctx=c.getContext("2d")
-c.width=innerWidth
-c.height=innerHeight
+document.getElementById("num").innerText =
+Math.floor(Math.random()*90+10);
 
-class Shape{
-constructor(){
-this.x=Math.random()*c.width
-this.y=Math.random()*c.height
-this.s=20+Math.random()*20
-this.vx=Math.random()*2-1
-this.vy=Math.random()*2-1
-this.color=`hsl(${Math.random()*360},80%,50%)`
-}
-move(){
-this.x+=this.vx
-this.y+=this.vy
-if(this.x<0||this.x>c.width) this.vx*=-1
-if(this.y<0||this.y>c.height) this.vy*=-1
-}
-draw(){
-ctx.strokeStyle=this.color
-ctx.beginPath()
-ctx.arc(this.x,this.y,this.s,0,6.28)
-ctx.stroke()
-}
+
+/* لاگین */
+
+function login(){
+
+    let u=document.getElementById("user").value;
+
+    let valid=["01","02","03","04","05","06","07","08","09"];
+
+    if(valid.includes(u)){
+        msg.innerText="سایت درحال تکمیل شدن است";
+    }else{
+        msg.innerText="نام کاربری یا رمز عبور نامعتبر است";
+    }
 }
 
-let shapes=[]
-for(let i=0;i<11;i++) shapes.push(new Shape())
 
-function animate(){
-ctx.clearRect(0,0,c.width,c.height)
-shapes.forEach(s=>{
-s.move()
-s.draw()
-})
-requestAnimationFrame(animate)
-}
-animate()
 
-/* پرچم شاهنشاهی شناور ساده */
-class Flag{
-constructor(){
-this.x=Math.random()*c.width
-this.y=Math.random()*c.height
-this.vx=0.5
-this.vy=0.5
-}
-move(){
-this.x+=this.vx
-this.y+=this.vy
-if(this.x<0||this.x>c.width) this.vx*=-1
-if(this.y<0||this.y>c.height) this.vy*=-1
-}
-draw(){
-ctx.fillStyle="green"
-ctx.fillRect(this.x,this.y,15,5)
-ctx.fillStyle="white"
-ctx.fillRect(this.x,this.y+5,15,5)
-ctx.fillStyle="red"
-ctx.fillRect(this.x,this.y+10,15,5)
-}
+/* ایموجی فیزیکی */
+
+const icons=["🦁","☀️","🎲","♠️","♥️","♦️","♣️","💰","🎰"];
+
+const box=document.getElementById("box");
+
+let items=[];
+
+for(let i=0;i<12;i++){
+
+    let el=document.createElement("div");
+    el.className="emoji";
+    el.innerText=icons[Math.floor(Math.random()*icons.length)];
+
+    box.appendChild(el);
+
+    items.push({
+        el:el,
+        x:Math.random()*window.innerWidth,
+        y:Math.random()*window.innerHeight,
+        vx:0,
+        vy:0,
+        mass:Math.random()*2+1
+    });
 }
 
-let flag=new Flag()
 
-setInterval(()=>{
-flag.move()
-flag.draw()
-},50)
+function update(){
+
+    let w=window.innerWidth;
+    let h=window.innerHeight;
+
+    items.forEach(p=>{
+
+        p.vy+=0.15*p.mass;
+
+        p.x+=p.vx;
+        p.y+=p.vy;
+
+        if(p.x<0){p.x=0;p.vx*=-0.7;}
+        if(p.x>w-30){p.x=w-30;p.vx*=-0.7;}
+
+        if(p.y<0){p.y=0;p.vy*=-0.7;}
+        if(p.y>h-30){p.y=h-30;p.vy*=-0.7;}
+
+        p.el.style.transform=
+        `translate(${p.x}px,${p.y}px)`;
+
+    });
+
+    requestAnimationFrame(update);
+}
+
+update();
+
+
+/* سنسور گوشی */
+
+window.addEventListener("deviceorientation",(e)=>{
+
+    let gx=e.gamma/40;
+    let gy=e.beta/40;
+
+    items.forEach(p=>{
+        p.vx+=gx/p.mass;
+        p.vy+=gy/p.mass;
+    });
+
+});
 
 </script>
 
