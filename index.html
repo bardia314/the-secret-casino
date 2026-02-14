@@ -3,173 +3,216 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Secret Casino</title>
-
+<title>سایت کازینو</title>
 <style>
+  body {
+    margin: 0;
+    font-family: sans-serif;
+    background-color: #000;
+    color: #0ff;
+    overflow: hidden;
+  }
+  .page {
+    display: none;
+    width: 100%;
+    height: 100vh;
+    position: relative;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  .active { display: block; }
 
-body{
-    margin:0;
-    font-family:sans-serif;
-    background:black;
-    overflow:hidden;
-    color:#00ffcc;
-}
+  /* صفحه اطلاعات */
+  #infoPage {
+    display: block;
+  }
+  .info-box {
+    position: relative;
+    width: calc(100% - 40px);
+    height: calc(100% - 40px);
+    margin: 0 auto;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 15px;
+    overflow: hidden;
+    background-color: #111;
+  }
+  .emoji {
+    position: absolute;
+    font-size: 40px;
+    user-select: none;
+  }
+  .top-left, .top-right, .bottom {
+    position: absolute;
+    font-weight: bold;
+    color: #0ff;
+  }
+  .top-left { top: 10px; left: 20px; }
+  .top-right { top: 10px; right: 20px; }
+  .bottom { bottom: 10px; width: 100%; text-align: center; }
+  .center-text {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    text-align: center;
+    transform: translateY(-50%);
+    font-size: 18px;
+    color: #0ff;
+  }
+  .link-button {
+    color: #f0f;
+    text-decoration: underline;
+    cursor: pointer;
+  }
 
-/* صفحات */
-
-.page{
-    display:none;
-    position:absolute;
-    inset:0;
-}
-
-.active{
-    display:flex;
-}
-
-/* صفحه اطلاعات */
-
-#info{
-    display:block;
-}
-
-/* کادر اصلی */
-
-#box{
-    position:absolute;
-    inset:20px;
-    border:2px solid rgba(255,255,255,0.2);
-    border-radius:15px;
-    overflow:hidden;
-}
-
-/* ایموجی */
-
-.emoji{
-    position:absolute;
-    font-size:40px;
-    user-select:none;
-    pointer-events:none;
-}
-
-/* بالا */
-
-.top{
-    position:absolute;
-    width:100%;
-    top:10px;
-    display:flex;
-    justify-content:space-between;
-    padding:0 25px;
-    font-size:18px;
-}
-
-/* وسط */
-
-.center{
-    position:absolute;
-    width:100%;
-    top:40%;
-    text-align:center;
-    font-size:22px;
-}
-
-.flag{
-    font-size:50px;
-}
-
-/* پایین */
-
-.bottom{
-    position:absolute;
-    bottom:15px;
-    width:100%;
-    text-align:center;
-    color:white;
-}
-
-/* دکمه */
-
-button{
-    background:none;
-    border:none;
-    color:#ffcc00;
-    font-size:16px;
-}
-
-/* صفحه ادمین */
-
-#admin{
-    justify-content:center;
-    align-items:center;
-}
-
-.box{
-    border:1px solid #00ffcc;
-    padding:30px;
-    border-radius:10px;
-    text-align:center;
-}
-
-input{
-    margin:10px;
-    padding:10px;
-    background:black;
-    border:1px solid #00ffcc;
-    color:white;
-}
-
-.login{
-    background:#00ffcc;
-    color:black;
-    padding:10px 20px;
-}
-
-#msg{
-    margin-top:10px;
-    color:yellow;
-}
-
+  /* صفحه ادمین */
+  #adminPage {
+    display: none;
+    text-align: center;
+    padding-top: 50px;
+  }
+  .admin-box {
+    display: inline-block;
+    background-color: #111;
+    padding: 20px;
+    border: 2px solid #0ff;
+    border-radius: 10px;
+    text-align: center;
+    width: 90%;
+    max-width: 300px;
+  }
+  .admin-box input {
+    width: 80%;
+    padding: 8px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #0ff;
+    background-color: #000;
+    color: #0ff;
+  }
+  .admin-box button {
+    padding: 8px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #0ff;
+    color: #000;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .admin-box button:hover {
+    background-color: #0cc;
+  }
+  #adminMessage {
+    margin-top: 10px;
+    color: #f0f;
+  }
 </style>
 </head>
 <body>
 
-
 <!-- صفحه اطلاعات -->
-
-<div id="info" class="page active">
-
-<div id="box"></div>
-
-<div class="top">
-
-<div>
-<button onclick="show('admin')">ورود ادمین</button>
+<div id="infoPage" class="page active">
+  <div class="top-left"><span class="link-button" id="toAdmin">ورود ادمین</span></div>
+  <div class="top-right">شماره غرفه : <span id="boothNumber">42</span></div>
+  <div class="info-box" id="emojiBox"></div>
+  <div class="center-text">طبقه دوم_کلاس ۹۰۴</div>
+  <div class="bottom">ID Rubika: @the_secret_casino</div>
 </div>
-
-<div>
-شماره غرفه : <span id="num"></span>
-</div>
-
-</div>
-
-<div class="center">
-<div class="flag">🏴</div>
-<br>
-طبقه دوم_کلاس ۹۰۴
-</div>
-
-<div class="bottom">
-ID Rubika: @the_secret_casino
-</div>
-
-</div>
-
 
 <!-- صفحه ادمین -->
+<div id="adminPage" class="page">
+  <div class="admin-box">
+    <h2>ورود ادمین</h2>
+    <input type="text" id="username" placeholder="نام کاربری"><br>
+    <input type="password" id="password" placeholder="رمز عبور"><br>
+    <button id="loginBtn">ورود</button>
+    <div id="adminMessage"></div>
+  </div>
+</div>
 
-<div id="admin" class="page">
+<script>
+  // سوئیچ بین صفحات
+  const infoPage = document.getElementById('infoPage');
+  const adminPage = document.getElementById('adminPage');
+  document.getElementById('toAdmin').addEventListener('click', () => {
+    infoPage.classList.remove('active');
+    adminPage.classList.add('active');
+  });
 
+  // منطق ورود ادمین
+  document.getElementById('loginBtn').addEventListener('click', () => {
+    const username = document.getElementById('username').value;
+    const msg = document.getElementById('adminMessage');
+    if(/^0[1-9]$/.test(username)) {
+      msg.textContent = "سایت درحال تکمیل شدن است";
+    } else {
+      msg.textContent = "نام کاربری یا رمز عبور نامعتبر است";
+    }
+  });
+
+  // ایجاد ایموجی‌ها
+  const emojiBox = document.getElementById('emojiBox');
+  const emojis = ['🎲','🃏','💰','🎰','🦁','☀️'];
+  const emojiCount = 10;
+  const emojiObjs = [];
+
+  for(let i=0;i<emojiCount;i++){
+    const span = document.createElement('span');
+    const emoji = emojis[Math.floor(Math.random()*emojis.length)];
+    span.textContent = emoji;
+    span.className = 'emoji';
+    span.style.left = Math.random()*(emojiBox.clientWidth-40)+'px';
+    span.style.top = Math.random()*(emojiBox.clientHeight-40)+'px';
+    emojiBox.appendChild(span);
+
+    emojiObjs.push({
+      el: span,
+      x: parseFloat(span.style.left),
+      y: parseFloat(span.style.top),
+      vx: (Math.random()*2-1),
+      vy: (Math.random()*2-1),
+      mass: Math.random()*1.5+0.5
+    });
+  }
+
+  function animate() {
+    const width = emojiBox.clientWidth;
+    const height = emojiBox.clientHeight;
+
+    emojiObjs.forEach(obj => {
+      // گرانش سبک
+      obj.vy += 0.05 * obj.mass;
+
+      obj.x += obj.vx;
+      obj.y += obj.vy;
+
+      // برخورد با دیواره‌ها
+      if(obj.x < 0) { obj.x=0; obj.vx*=-0.7; }
+      if(obj.x>width-40) { obj.x=width-40; obj.vx*=-0.7; }
+      if(obj.y<0) { obj.y=0; obj.vy*=-0.7; }
+      if(obj.y>height-40) { obj.y=height-40; obj.vy*=-0.7; }
+
+      obj.el.style.left = obj.x+'px';
+      obj.el.style.top = obj.y+'px';
+    });
+
+    requestAnimationFrame(animate);
+  }
+  animate();
+
+  // چرخش گوشی - تغییر حرکت ایموجی‌ها
+  window.addEventListener('deviceorientation', (event) => {
+    const gamma = event.gamma || 0; // چپ/راست
+    const beta = event.beta || 0; // جلو/عقب
+
+    emojiObjs.forEach(obj => {
+      obj.vx += gamma/1000;
+      obj.vy += beta/1000;
+    });
+  });
+</script>
+
+</body>
+</html>
 <div class="box">
 
 <h2>ورود ادمین</h2>
