@@ -14,7 +14,7 @@ body{
     overflow:hidden;
 }
 
-/* صفحات */
+/* همه صفحات مخفی */
 
 .page{
     display:none;
@@ -22,25 +22,27 @@ body{
     inset:0;
 }
 
-.show{
-    display:block;
+/* صفحه فعال */
+
+.active{
+    display:flex;
 }
 
-/* صفحه خوش آمدید */
+/* خوش آمد */
 
 #welcome{
     color:red;
-    display:flex;
     justify-content:center;
     align-items:center;
     font-size:40px;
     font-weight:bold;
 }
 
-/* صفحه اطلاعات */
+/* اطلاعات */
 
 #info{
     color:#00ffcc;
+    display:block;
 }
 
 .top{
@@ -50,7 +52,6 @@ body{
     display:flex;
     justify-content:space-between;
     padding:0 15px;
-    font-size:18px;
 }
 
 .center{
@@ -58,7 +59,6 @@ body{
     width:100%;
     top:40%;
     text-align:center;
-    font-size:22px;
 }
 
 .bottom{
@@ -73,31 +73,22 @@ body{
     font-size:40px;
 }
 
-/* ایموجی باکس */
-
-#box{
-    position:absolute;
-    inset:0;
-    border:2px solid rgba(255,255,255,0.15);
-    overflow:hidden;
-}
-
-.emoji{
-    position:absolute;
-    font-size:28px;
-    user-select:none;
+button{
+    background:none;
+    border:none;
+    color:#ffcc00;
+    font-size:16px;
 }
 
 /* ادمین */
 
 #admin{
-    color:#00ffcc;
-    display:flex;
     justify-content:center;
     align-items:center;
+    color:#00ffcc;
 }
 
-.adminBox{
+.box{
     border:1px solid #00ffcc;
     padding:30px;
     border-radius:10px;
@@ -109,6 +100,123 @@ input{
     padding:10px;
     background:black;
     border:1px solid #00ffcc;
+    color:white;
+}
+
+button.login{
+    background:#00ffcc;
+    color:black;
+    padding:10px 20px;
+}
+
+#msg{
+    margin-top:10px;
+    color:yellow;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- صفحه خوش آمد -->
+
+<div id="welcome" class="page active" onclick="show('info')">
+خوش آمدید
+</div>
+
+
+<!-- صفحه اطلاعات -->
+
+<div id="info" class="page">
+
+<div class="top">
+
+<div>
+<button onclick="show('admin')">ورود ادمین</button>
+</div>
+
+<div>
+شماره غرفه : <span id="num"></span>
+</div>
+
+</div>
+
+<div class="center">
+<div class="flag">🏴</div>
+<br>
+طبقه دوم_کلاس ۹۰۴
+</div>
+
+<div class="bottom">
+ID Rubika: @the_secret_casino
+</div>
+
+</div>
+
+
+<!-- صفحه ادمین -->
+
+<div id="admin" class="page">
+
+<div class="box">
+
+<h2>ورود ادمین</h2>
+
+<input id="user" placeholder="نام کاربری"><br>
+<input id="pass" type="password" placeholder="رمز عبور"><br>
+
+<button class="login" onclick="login()">ورود</button>
+
+<div id="msg"></div>
+
+</div>
+
+</div>
+
+
+<script>
+
+/* شماره غرفه */
+
+document.getElementById("num").innerText =
+Math.floor(Math.random()*90+10);
+
+
+/* تغییر صفحه */
+
+function show(id){
+
+    document.querySelectorAll(".page")
+    .forEach(p=>{
+        p.style.display="none";
+    });
+
+    document.getElementById(id).style.display="flex";
+}
+
+
+/* لاگین */
+
+function login(){
+
+    let u=document.getElementById("user").value;
+
+    let valid=["01","02","03","04","05","06","07","08","09"];
+
+    if(valid.includes(u)){
+        msg.innerText="سایت درحال تکمیل شدن است";
+    }
+    else{
+        msg.innerText="نام کاربری یا رمز عبور نامعتبر است";
+    }
+
+}
+
+</script>
+
+</body>
+</html>    border:1px solid #00ffcc;
     color:white;
 }
 
