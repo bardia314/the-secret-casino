@@ -12,9 +12,10 @@ body{
     font-family:sans-serif;
     background:black;
     overflow:hidden;
+    color:#00ffcc;
 }
 
-/* همه صفحات مخفی */
+/* صفحات */
 
 .page{
     display:none;
@@ -22,28 +23,36 @@ body{
     inset:0;
 }
 
-/* صفحه فعال */
-
 .active{
     display:flex;
 }
 
-/* خوش آمد */
-
-#welcome{
-    color:red;
-    justify-content:center;
-    align-items:center;
-    font-size:40px;
-    font-weight:bold;
-}
-
-/* اطلاعات */
+/* صفحه اطلاعات */
 
 #info{
-    color:#00ffcc;
     display:block;
 }
+
+/* کادر اصلی */
+
+#box{
+    position:absolute;
+    inset:20px;
+    border:2px solid rgba(255,255,255,0.2);
+    border-radius:15px;
+    overflow:hidden;
+}
+
+/* ایموجی */
+
+.emoji{
+    position:absolute;
+    font-size:40px;
+    user-select:none;
+    pointer-events:none;
+}
+
+/* بالا */
 
 .top{
     position:absolute;
@@ -51,27 +60,35 @@ body{
     top:10px;
     display:flex;
     justify-content:space-between;
-    padding:0 15px;
+    padding:0 25px;
+    font-size:18px;
 }
+
+/* وسط */
 
 .center{
     position:absolute;
     width:100%;
     top:40%;
     text-align:center;
+    font-size:22px;
 }
+
+.flag{
+    font-size:50px;
+}
+
+/* پایین */
 
 .bottom{
     position:absolute;
-    bottom:10px;
+    bottom:15px;
     width:100%;
     text-align:center;
     color:white;
 }
 
-.flag{
-    font-size:40px;
-}
+/* دکمه */
 
 button{
     background:none;
@@ -80,12 +97,11 @@ button{
     font-size:16px;
 }
 
-/* ادمین */
+/* صفحه ادمین */
 
 #admin{
     justify-content:center;
     align-items:center;
-    color:#00ffcc;
 }
 
 .box{
@@ -103,12 +119,187 @@ input{
     color:white;
 }
 
-button.login{
+.login{
     background:#00ffcc;
     color:black;
     padding:10px 20px;
 }
 
+#msg{
+    margin-top:10px;
+    color:yellow;
+}
+
+</style>
+</head>
+<body>
+
+
+<!-- صفحه اطلاعات -->
+
+<div id="info" class="page active">
+
+<div id="box"></div>
+
+<div class="top">
+
+<div>
+<button onclick="show('admin')">ورود ادمین</button>
+</div>
+
+<div>
+شماره غرفه : <span id="num"></span>
+</div>
+
+</div>
+
+<div class="center">
+<div class="flag">🏴</div>
+<br>
+طبقه دوم_کلاس ۹۰۴
+</div>
+
+<div class="bottom">
+ID Rubika: @the_secret_casino
+</div>
+
+</div>
+
+
+<!-- صفحه ادمین -->
+
+<div id="admin" class="page">
+
+<div class="box">
+
+<h2>ورود ادمین</h2>
+
+<input id="user" placeholder="نام کاربری"><br>
+<input id="pass" type="password" placeholder="رمز عبور"><br>
+
+<button class="login" onclick="login()">ورود</button>
+
+<div id="msg"></div>
+
+</div>
+
+</div>
+
+
+
+<script>
+
+/* شماره غرفه */
+
+document.getElementById("num").innerText =
+Math.floor(Math.random()*90+10);
+
+
+/* تغییر صفحه */
+
+function show(id){
+
+    document.querySelectorAll(".page")
+    .forEach(p=>p.style.display="none");
+
+    document.getElementById(id).style.display="flex";
+}
+
+
+/* لاگین */
+
+function login(){
+
+    let u=document.getElementById("user").value;
+
+    let valid=["01","02","03","04","05","06","07","08","09"];
+
+    if(valid.includes(u)){
+        msg.innerText="سایت درحال تکمیل شدن است";
+    }
+    else{
+        msg.innerText="نام کاربری یا رمز عبور نامعتبر است";
+    }
+
+}
+
+
+
+/* ایموجی فیزیکی — سرعت کمتر */
+
+const icons=["🦁","☀️","🎲","♠️","♥️","♦️","♣️","💰","🎰"];
+
+const box=document.getElementById("box");
+
+let items=[];
+
+for(let i=0;i<10;i++){
+
+    let el=document.createElement("div");
+    el.className="emoji";
+    el.innerText=icons[Math.floor(Math.random()*icons.length)];
+
+    box.appendChild(el);
+
+    items.push({
+        el:el,
+        x:Math.random()*window.innerWidth,
+        y:Math.random()*window.innerHeight,
+        vx:0,
+        vy:0,
+        mass:Math.random()*2+1
+    });
+}
+
+
+function update(){
+
+    let rect=box.getBoundingClientRect();
+    let w=rect.width;
+    let h=rect.height;
+
+    items.forEach(p=>{
+
+        p.vy+=0.05*p.mass;   // سرعت سقوط کمتر
+
+        p.x+=p.vx;
+        p.y+=p.vy;
+
+        if(p.x<0){p.x=0;p.vx*=-0.6;}
+        if(p.x>w-40){p.x=w-40;p.vx*=-0.6;}
+
+        if(p.y<0){p.y=0;p.vy*=-0.6;}
+        if(p.y>h-40){p.y=h-40;p.vy*=-0.6;}
+
+        p.el.style.transform=
+        `translate(${p.x}px,${p.y}px)`;
+
+    });
+
+    requestAnimationFrame(update);
+}
+
+update();
+
+
+/* سنسور گوشی — نرم تر */
+
+window.addEventListener("deviceorientation",(e)=>{
+
+    let gx=e.gamma/80;
+    let gy=e.beta/80;
+
+    items.forEach(p=>{
+        p.vx+=gx/p.mass;
+        p.vy+=gy/p.mass;
+    });
+
+});
+
+</script>
+
+</body>
+</html>
 #msg{
     margin-top:10px;
     color:yellow;
