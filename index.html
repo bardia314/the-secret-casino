@@ -5,38 +5,43 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Secret Casino</title>
 <style>
-  /* General Styles */
-  body {
+  /* --- کل صفحه بدون اسکرول --- */
+  html, body {
     margin: 0;
     padding: 0;
+    overflow: hidden;
     background-color: #000;
     font-family: Arial, sans-serif;
-    color: #0ff; /* default neon cyan for text */
-    overflow-x: hidden;
+    color: #0ff;
   }
 
-  /* Pages */
+  /* --- صفحات --- */
   .page {
     display: none;
+    position: fixed; /* تمام viewport رو بگیره */
+    top: 0;
+    left: 0;
     width: 100%;
-    height: 100vh;
-    position: relative;
+    height: 100%;
+    overflow: hidden;
+    background-color: #000;
   }
+
   .active {
     display: block;
   }
 
-  /* Info Page Box */
+  /* --- Info Page Box --- */
   #info-box {
     position: absolute;
     top: 20px;
     left: 20px;
     right: 20px;
     bottom: 20px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
+    border: 2px solid rgba(255,255,255,0.3);
     border-radius: 15px;
-    background-color: rgba(255, 255, 255, 0.05);
-    overflow: hidden;
+    background-color: rgba(255,255,255,0.05);
+    overflow: hidden; /* emojiها از box بیرون نرن */
   }
 
   /* Top elements */
@@ -45,7 +50,6 @@
     top: 10px;
     font-size: 16px;
     font-weight: bold;
-    color: #0f0;
     z-index: 10;
   }
   .top-left { left: 15px; }
@@ -67,7 +71,7 @@
     left: 50%;
     transform: translate(-50%, -50%);
     font-size: 24px;
-    color: #ff0; /* neon yellow */
+    color: #ff0;
     font-weight: bold;
     text-align: center;
   }
@@ -83,14 +87,14 @@
     font-weight: bold;
   }
 
-  /* Emoji Styles */
+  /* Emojis */
   .emoji {
     position: absolute;
     font-size: 40px;
     pointer-events: none;
   }
 
-  /* Admin Page */
+  /* --- Admin Page --- */
   #admin-box {
     position: absolute;
     top: 50%;
@@ -102,11 +106,7 @@
     border: 2px solid #0ff;
     border-radius: 10px;
     text-align: center;
-    background-color: rgba(255, 255, 255, 0.05);
-  }
-  #admin-box h2 {
-    margin-bottom: 15px;
-    color: #0f0;
+    background-color: rgba(255,255,255,0.05);
   }
   #admin-box input {
     width: 80%;
