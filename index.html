@@ -108,7 +108,144 @@
     text-align: center;
     background-color: rgba(255,255,255,0.05);
   }
+  #admin-box h2 {
+    margin-bottom: 15px;
+    color: #0f0;
+  }
   #admin-box input {
+    width: 80%;
+    padding: 10px;
+    margin: 8px 0;
+    border: 1px solid #0ff;
+    border-radius: 5px;
+    background-color: #111;
+    color: #0ff;
+    font-size: 14px;
+  }
+  #admin-box button {
+    padding: 10px 20px;
+    margin-top: 10px;
+    border: 1px solid #0f0;
+    border-radius: 5px;
+    background-color: #000;
+    color: #0f0;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  #admin-msg {
+    margin-top: 10px;
+    font-weight: bold;
+    color: #f00;
+  }
+</style>
+</head>
+<body>
+
+<!-- Info Page -->
+<div id="info-page" class="page active">
+  <div id="info-box">
+    <div class="top-left">
+      <button onclick="showPage('admin-page')">Are you an admin?</button>
+    </div>
+    <div class="top-right">
+      Booth number: <span id="booth-number">07</span>
+    </div>
+    <div id="info-center">طبقه دوم کلاس ۹۰۴</div>
+    <div id="info-bottom">ID Rubika: @the_secret_casino</div>
+  </div>
+</div>
+
+<!-- Admin Page -->
+<div id="admin-page" class="page">
+  <div id="admin-box">
+    <h2>Admin Login</h2>
+    <input type="text" id="admin-username" placeholder="Username"><br>
+    <input type="password" id="admin-password" placeholder="Password"><br>
+    <button onclick="adminLogin()">Login</button>
+    <div id="admin-msg"></div>
+  </div>
+</div>
+
+<script>
+  /* --- Page Navigation --- */
+  function showPage(pageId) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(pageId).classList.add('active');
+  }
+
+  /* --- Admin Login Logic --- */
+  function adminLogin() {
+    const username = document.getElementById('admin-username').value;
+    const msg = document.getElementById('admin-msg');
+    if (/^0[1-9]$/.test(username)) {
+      msg.textContent = "Site is under construction";
+      msg.style.color = '#ff0';
+    } else {
+      msg.textContent = "Invalid username or password";
+      msg.style.color = '#f00';
+    }
+  }
+
+  /* --- Emoji Physics (متغیر و آرام‌تر) --- */
+  const box = document.getElementById('info-box');
+  const emojis = ['🦁','☀️','🎲','🃏','💰','🎰','🤑','🀄','💵','🪙'];
+  const physics = [];
+
+  function boxRect() { return box.getBoundingClientRect(); }
+
+  for (let i=0; i<emojis.length; i++) {
+    const span = document.createElement('span');
+    span.classList.add('emoji');
+    span.textContent = emojis[i];
+    box.appendChild(span);
+
+    const rect = boxRect();
+    const mass = 0.5 + Math.random()*1.5;
+
+    physics.push({
+      x: Math.random()*(rect.width-40),
+      y: Math.random()*(rect.height-40),
+      vx: (Math.random()-0.5)*0.5,  // سرعت کمتر و آرام‌تر
+      vy: 0,
+      mass: mass,
+      elem: span
+    });
+    span.style.left = physics[i].x + 'px';
+    span.style.top = physics[i].y + 'px';
+  }
+
+  let tiltX = 0;
+  let tiltY = 0;
+
+  window.addEventListener('deviceorientation', e => {
+    tiltX = e.gamma ? e.gamma/90 : 0;
+    tiltY = e.beta ? e.beta/90 : 0;
+  });
+
+  function animate() {
+    const rect = boxRect();
+    physics.forEach(p => {
+      p.vy += 0.02 * p.mass + tiltY*0.1;  // آرام‌تر و متغیر
+      p.vx += tiltX*0.1;                   // حرکت افقی آرام‌تر
+
+      p.x += p.vx;
+      p.y += p.vy;
+
+      if(p.x < 0) { p.x=0; p.vx*=-0.5; }
+      if(p.x > rect.width-40) { p.x=rect.width-40; p.vx*=-0.5; }
+      if(p.y < 0) { p.y=0; p.vy*=-0.5; }
+      if(p.y > rect.height-40) { p.y=rect.height-40; p.vy*=-0.5; }
+
+      p.elem.style.left = p.x + 'px';
+      p.elem.style.top = p.y + 'px';
+    });
+    requestAnimationFrame(animate);
+  }
+  animate();
+</script>
+
+</body>
+</html>  #admin-box input {
     width: 80%;
     padding: 10px;
     margin: 8px 0;
